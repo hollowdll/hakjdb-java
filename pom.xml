@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+    <groupId>com.github.hakjdb.hakjdbjava</groupId>
+    <artifactId>hakjdbjava</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>hakjdb-java</name>
+    <description>Java client library for HakjDB in-memory key-value data store.</description>
+    <url>https://github.com/hollowdll/hakjdb-java</url>
+
+    <properties>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://github.com/hollowdll/hakjdb-java/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/hollowdll/hakjdb-java/issues</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/hollowdll/hakjdb-java.git</connection>
+        <url>https://github.com/hollowdll/hakjdb-java</url>
+        <developerConnection>scm:git:ssh://github.com:hollowdll/hakjdb-java.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/hollowdll/hakjdb-java</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencies>
+    </dependencies>
+
+</project>
