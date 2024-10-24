@@ -6,6 +6,8 @@
 syntax = "proto3";
 package api.v1.kvpb;
 
+option java_package = "com.github.hakjdb.hakjdbjava.api.v1.kvpb";
+
 message GetAllKeysRequest {}
 
 message GetAllKeysResponse {

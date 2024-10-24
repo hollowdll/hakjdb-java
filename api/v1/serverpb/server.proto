@@ -6,6 +6,8 @@
 syntax = "proto3";
 package api.v1.serverpb;
 
+option java_package = "com.github.hakjdb.hakjdbjava.api.v1.serverpb";
+
 // MemoryInfo represents information about memory consumption.
 message MemoryInfo {
   // Allocated memory.
