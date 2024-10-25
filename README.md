@@ -1,5 +1,7 @@
 # hakjdb-java
-HakjDB Java client
+Java client library for [HakjDB](https://github.com/hollowdll/hakjdb) in-memory key-value data store.
+
+Under development!
 
 # Generate Java protobuf sources
 
