@@ -2,7 +2,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <groupId>com.github.hakjdb.hakjdbjava</groupId>
+    <groupId>com.github.hakjdb</groupId>
     <artifactId>hakjdbjava</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>hakjdb-java</name>
@@ -10,8 +10,12 @@
     <url>https://github.com/hollowdll/hakjdb-java</url>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <grpc.version>1.67.1</grpc.version>
-        <protobuf.version>3.25.3</protobuf.version>
+        <protoc.version>3.25.5</protoc.version>
+        <protobuf.version>4.28.2</protobuf.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <licenses>
@@ -45,18 +49,18 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
-            <version>1.67.1</version>
+            <version>${grpc.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>1.67.1</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>1.67.1</version>
+            <version>${grpc.version}</version>
         </dependency>
         <dependency> <!-- necessary for Java 9+ -->
             <groupId>org.apache.tomcat</groupId>
@@ -89,9 +93,9 @@
                 <version>0.6.1</version>
                 <configuration>
                     <protoSourceRoot>${project.basedir}/api/v1</protoSourceRoot> <!-- custom proto file path -->
-                    <protocArtifact>com.google.protobuf:protoc:3.25.3:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.67.1:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>
                 <executions>
                     <execution>
