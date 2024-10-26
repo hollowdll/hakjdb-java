@@ -6,7 +6,6 @@ public interface StringKeyValue {
      *
      * @param key
      * @param value
-     * @return nothing
      */
     void set(String key, String value);
 
