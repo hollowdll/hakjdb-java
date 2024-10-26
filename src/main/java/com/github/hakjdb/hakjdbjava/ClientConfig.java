@@ -48,4 +48,13 @@ public final class ClientConfig {
             return this;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ClientConfig{" +
+                "defaultDB='" + defaultDB + '\'' +
+                ", requestTimeoutSeconds=" + requestTimeoutSeconds +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

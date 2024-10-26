@@ -10,7 +10,7 @@ public interface StringKeyValue {
     void set(String key, String value);
 
     /**
-     * Retrieves the value of a String key.
+     * Returns the value of a String key.
      *
      * @param key
      * @return The value of the String key

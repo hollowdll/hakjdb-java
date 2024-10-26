@@ -4,14 +4,14 @@ import java.util.Set;
 
 public interface GeneralKeyValue {
     /**
-     * Retrieve all the keys.
+     * Returns all the keys.
      *
      * @return A list of keys
      */
     Set<String> getKeys();
 
     /**
-     * Retrieve the data type of the value a key is holding.
+     * Returns the data type of the value a key is holding.
      *
      * @param key
      * @return String representation of the type
@@ -19,7 +19,7 @@ public interface GeneralKeyValue {
     String getKeyType(String key);
 
     /**
-     * Delete the specified keys.
+     * Deletes the specified keys.
      *
      * @param keys
      * @return The number of keys that were deleted
@@ -27,7 +27,7 @@ public interface GeneralKeyValue {
     long deleteKeys(String... keys);
 
     /**
-     * Delete all the keys.
+     * Deletes all the keys.
      */
     void deleteAllKeys();
 }
