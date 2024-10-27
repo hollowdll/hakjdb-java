@@ -24,6 +24,10 @@ public final class ClientConfig {
         return password;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
         private String defaultDB = "default";
         private int requestTimeoutSeconds = 10;
