@@ -10,4 +10,11 @@ public class HakjDB {
     public HakjDB(String host, int port, ClientConfig config) {
         this.connection = new Connection(host, port, config);
     }
+
+    /*
+    @Override
+    public String echo(String message) {
+        //
+    }
+    */
 }
