@@ -20,6 +20,20 @@ public class GrpcClient implements EchoRPC {
         this.echoStub = EchoServiceGrpc.newBlockingStub(channel);
     }
 
+    public void shutdown(long waitTimeSeconds) {
+        if (!channel.isShutdown()) {
+            try {
+                channel.shutdown().awaitTermination(waitTimeSeconds, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                channel.shutdownNow();
+            } finally {
+                if (!channel.isShutdown()) {
+                    channel.shutdownNow();
+                }
+            }
+        }
+    }
+
     public Echo.UnaryEchoResponse unaryEcho(String message, int timeoutSeconds) {
         Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
         return echoStub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS)

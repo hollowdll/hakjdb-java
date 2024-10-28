@@ -19,11 +19,19 @@ public class Connection {
     }
 
     public void connect() throws ConnectionException {
-        // TODO
+        try {
+            sendRequestEcho("");
+        } catch (Exception e) {
+            throw new ConnectionException("Could not connect", e);
+        }
     }
 
     public void disconnect() throws ConnectionException {
-        // TODO
+        try {
+            grpcClient.shutdown(config.getDisconnectWaitTimeSeconds());
+        } catch (Exception e) {
+            throw new ConnectionException("Could not disconnect", e);
+        }
     }
 
     public GrpcClient getGrpcClient() {
