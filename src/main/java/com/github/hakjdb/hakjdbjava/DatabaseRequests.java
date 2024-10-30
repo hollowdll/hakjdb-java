@@ -2,7 +2,7 @@ package com.github.hakjdb.hakjdbjava;
 
 import java.util.Set;
 
-public interface Database {
+public interface DatabaseRequests {
     /**
      * Creates a new database with the specified name.
      * Sets an empty database description.

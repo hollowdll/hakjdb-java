@@ -1,6 +1,6 @@
 package com.github.hakjdb.hakjdbjava;
 
-public interface StringKeyValue {
+public interface StringKeyValueRequests {
     /**
      * Sets a key to hold a String value.
      *

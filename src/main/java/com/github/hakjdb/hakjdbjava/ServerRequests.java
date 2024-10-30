@@ -2,7 +2,7 @@ package com.github.hakjdb.hakjdbjava;
 
 import java.util.List;
 
-public interface Server {
+public interface ServerRequests {
     /**
      * Returns information about the server as a JSON string.
      * The output is divided into sections.

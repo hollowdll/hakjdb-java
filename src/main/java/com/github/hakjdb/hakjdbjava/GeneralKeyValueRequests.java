@@ -2,7 +2,7 @@ package com.github.hakjdb.hakjdbjava;
 
 import java.util.Set;
 
-public interface GeneralKeyValue {
+public interface GeneralKeyValueRequests {
     /**
      * Returns all the keys.
      *

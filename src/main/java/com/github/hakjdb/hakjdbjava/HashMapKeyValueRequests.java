@@ -4,7 +4,7 @@ import com.github.hakjdb.hakjdbjava.util.HashMapFieldValue;
 
 import java.util.Map;
 
-public interface HashMapKeyValue {
+public interface HashMapKeyValueRequests {
     /**
      * Sets the specified fields and their values in the HashMap stored at a key.
      *

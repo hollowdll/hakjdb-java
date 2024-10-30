@@ -1,6 +1,6 @@
 package com.github.hakjdb.hakjdbjava;
 
-public class HakjDB {
+public class HakjDB implements EchoRequests {
     private Connection connection;
 
     public HakjDB(String host, int port) {
@@ -11,10 +11,8 @@ public class HakjDB {
         this.connection = new Connection(host, port, config);
     }
 
-    /*
     @Override
     public String echo(String message) {
-        //
+        return connection.sendRequestEcho(message);
     }
-    */
 }
