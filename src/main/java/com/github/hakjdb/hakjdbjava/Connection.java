@@ -1,21 +1,31 @@
 package com.github.hakjdb.hakjdbjava;
 
-import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
+import com.github.hakjdb.hakjdbjava.grpc.DefaultGrpcClient;
 import com.github.hakjdb.hakjdbjava.grpc.GrpcClient;
 
 public class Connection {
-    private final GrpcClient grpcClient;
     private final ClientConfig config;
+    private final GrpcClient grpcClient;
 
     public Connection(String host, int port) {
-        this.grpcClient = new GrpcClient(host, port);
         this.config = ClientConfig.builder().build();
+        this.grpcClient = new DefaultGrpcClient(host, port, this.config);
     }
 
     public Connection(String host, int port, ClientConfig config) {
-        this.grpcClient = new GrpcClient(host, port);
         this.config = config;
+        this.grpcClient = new DefaultGrpcClient(host, port, config);
+    }
+
+    public Connection(GrpcClient grpcClient) {
+        this.config = ClientConfig.builder().build();
+        this.grpcClient = grpcClient;
+    }
+
+    public Connection(GrpcClient grpcClient, ClientConfig config) {
+        this.config = config;
+        this.grpcClient = grpcClient;
     }
 
     public void connect() throws ConnectionException {
@@ -34,12 +44,7 @@ public class Connection {
         }
     }
 
-    public GrpcClient getGrpcClient() {
-        return grpcClient;
-    }
-
     public String sendRequestEcho(String message) {
-        Echo.UnaryEchoResponse response = grpcClient.unaryEcho(message, config.getRequestTimeoutSeconds());
-        return response.getMsg();
+        return grpcClient.callUnaryEcho(message);
     }
 }

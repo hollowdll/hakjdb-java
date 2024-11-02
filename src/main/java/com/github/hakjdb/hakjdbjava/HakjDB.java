@@ -1,7 +1,7 @@
 package com.github.hakjdb.hakjdbjava;
 
 public class HakjDB implements EchoRequests {
-    private Connection connection;
+    private final Connection connection;
 
     public HakjDB(String host, int port) {
         this.connection = new Connection(host, port);
