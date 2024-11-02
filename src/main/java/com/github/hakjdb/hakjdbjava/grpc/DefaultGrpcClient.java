@@ -15,14 +15,14 @@ public class DefaultGrpcClient implements GrpcClient {
     public DefaultGrpcClient(String host, int port, ClientConfig config) {
         this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
         this.echoClient = new DefaultEchoGrpcClient(this.channel);
-        this.requestMetadata = new GrpcRequestMetadata();
+        this.requestMetadata = GrpcRequestMetadata.builder().build();
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
     public DefaultGrpcClient(String host, int port, ClientConfig config, EchoGrpcClient echoClient) {
         this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
         this.echoClient = echoClient;
-        this.requestMetadata = new GrpcRequestMetadata();
+        this.requestMetadata = GrpcRequestMetadata.builder().build();
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
