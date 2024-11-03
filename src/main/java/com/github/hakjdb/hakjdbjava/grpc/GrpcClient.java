@@ -1,6 +1,9 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
 public interface GrpcClient {
+    int getRequestTimeoutSeconds();
+    GrpcRequestMetadata getRequestMetadata();
+
     /**
      * Shuts down the client channel.
      *

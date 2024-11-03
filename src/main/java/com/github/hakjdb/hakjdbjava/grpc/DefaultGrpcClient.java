@@ -26,9 +26,24 @@ public class DefaultGrpcClient implements GrpcClient {
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
+    public DefaultGrpcClient(ClientConfig config, EchoGrpcClient echoClient) {
+        this.channel = null;
+        this.echoClient = echoClient;
+        this.requestMetadata = GrpcRequestMetadata.builder().build();
+        this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
+    }
+
+    public int getRequestTimeoutSeconds() {
+        return requestTimeoutSeconds;
+    }
+
+    public GrpcRequestMetadata getRequestMetadata() {
+        return requestMetadata;
+    }
+
     @Override
     public void shutdown(long waitTimeSeconds) {
-        if (!channel.isShutdown()) {
+        if (channel != null && !channel.isShutdown()) {
             try {
                 channel.shutdown().awaitTermination(waitTimeSeconds, TimeUnit.SECONDS);
             } catch (InterruptedException e) {

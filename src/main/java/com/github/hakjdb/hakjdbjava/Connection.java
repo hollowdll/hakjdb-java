@@ -8,6 +8,11 @@ public class Connection {
     private final ClientConfig config;
     private final GrpcClient grpcClient;
 
+    public Connection() {
+        this.config = ClientConfig.builder().build();
+        this.grpcClient = new DefaultGrpcClient("localhost", 12345, this.config);
+    }
+
     public Connection(String host, int port) {
         this.config = ClientConfig.builder().build();
         this.grpcClient = new DefaultGrpcClient(host, port, this.config);
