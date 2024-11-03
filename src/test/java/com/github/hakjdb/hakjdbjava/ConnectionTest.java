@@ -1,26 +1,35 @@
 package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.grpc.GrpcClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ConnectionTest {
-    @Mock
-    private GrpcClient grpcClient;
+    private GrpcClient mockedGrpcClient;
+    private Connection connection;
+
+    @BeforeEach
+    void setup() {
+        mockedGrpcClient = Mockito.mock(GrpcClient.class);
+        connection = new Connection(mockedGrpcClient);
+    }
 
     @Test
     public void sendRequestEcho() {
-        Connection connection = new Connection(grpcClient);
         String message = "hello";
-        when(grpcClient.callUnaryEcho(message)).thenReturn(message);
+        when(mockedGrpcClient.callUnaryEcho(message)).thenReturn(message);
 
         String result = connection.sendRequestEcho(message);
         assertEquals(message, result);
+        verify(mockedGrpcClient).callUnaryEcho(message);
     }
 }
