@@ -5,7 +5,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 public class HakjDBTest {
@@ -16,10 +16,34 @@ public class HakjDBTest {
             .withExposedPorts(containerPort);
 
     @Test
+    public void connects() {
+        assertDoesNotThrow(() -> {
+            Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+            String containerHost = hakjdbContainer.getHost();
+            HakjDB hakjdb = new HakjDB(containerHost, mappedPort);
+            assertNotNull(hakjdb);
+        });
+    }
+
+    @Test
+    public void disconnects() {
+        assertDoesNotThrow(() -> {
+            Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+            String containerHost = hakjdbContainer.getHost();
+            HakjDB hakjdb = new HakjDB(containerHost, mappedPort);
+            assertNotNull(hakjdb);
+            hakjdb.disconnect();
+            assertThrows(RuntimeException.class, () -> {
+                hakjdb.echo("");
+            });
+        });
+    }
+
+    @Test
     public void echoRequest() {
         Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
         String containerHost = hakjdbContainer.getHost();
-        System.out.printf("[Testcontainers] HakjDB container running at: %s:%d\n", containerHost, mappedPort);
+        // System.out.printf("[Testcontainers] HakjDB container running at: %s:%d\n", containerHost, mappedPort);
 
         HakjDB hakjdb = new HakjDB(containerHost, mappedPort);
         String message = "Hello World!";
