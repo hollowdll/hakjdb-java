@@ -1,21 +1,21 @@
 package com.github.hakjdb.hakjdbjava;
 
 public final class ClientConfig {
-    private final String defaultDB;
+    private final String defaultDatabase;
     private final int requestTimeoutSeconds;
     private final int disconnectWaitTimeSeconds;
     private final String password;
-    // TODO: SSL configs
+    // TODO: SSL/TLS configs
 
-    private ClientConfig(String defaultDB, int requestTimeoutSeconds, String password, int disconnectWaitTimeSeconds) {
-        this.defaultDB = defaultDB;
+    private ClientConfig(String defaultDatabase, int requestTimeoutSeconds, String password, int disconnectWaitTimeSeconds) {
+        this.defaultDatabase = defaultDatabase;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
         this.disconnectWaitTimeSeconds = disconnectWaitTimeSeconds;
         this.password = password;
     }
 
-    public String getDefaultDB() {
-        return defaultDB;
+    public String getDefaultDatabase() {
+        return defaultDatabase;
     }
 
     public int getRequestTimeoutSeconds() {
@@ -35,17 +35,17 @@ public final class ClientConfig {
     }
 
     public static class Builder {
-        private String defaultDB = "default";
-        private int requestTimeoutSeconds = 10;
-        private int disconnectWaitTimeSeconds = 5;
-        private String password;
+        private String defaultDatabase = ConfigDefaults.DEFAULT_DATABASE;
+        private int requestTimeoutSeconds = ConfigDefaults.DEFAULT_REQUEST_TIMEOUT_SECONDS;
+        private int disconnectWaitTimeSeconds = ConfigDefaults.DEFAULT_DISCONNECT_WAIT_TIME_SECONDS;
+        private String password = "";
 
         public ClientConfig build() {
-            return new ClientConfig(defaultDB, requestTimeoutSeconds, password, disconnectWaitTimeSeconds);
+            return new ClientConfig(defaultDatabase, requestTimeoutSeconds, password, disconnectWaitTimeSeconds);
         }
 
-        public Builder defaultDB(String defaultDB) {
-            this.defaultDB = defaultDB;
+        public Builder defaultDatabase(String defaultDatabase) {
+            this.defaultDatabase = defaultDatabase;
             return this;
         }
 
@@ -68,7 +68,7 @@ public final class ClientConfig {
     @Override
     public String toString() {
         return "ClientConfig{" +
-                "defaultDB='" + defaultDB + '\'' +
+                "defaultDatabase='" + defaultDatabase + '\'' +
                 ", requestTimeoutSeconds=" + requestTimeoutSeconds +
                 ", password='" + password + '\'' +
                 '}';

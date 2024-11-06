@@ -10,7 +10,7 @@ public class Connection {
 
     public Connection() {
         this.config = ClientConfig.builder().build();
-        this.grpcClient = new DefaultGrpcClient("localhost", 12345, this.config);
+        this.grpcClient = new DefaultGrpcClient(ConfigDefaults.DEFAULT_HOST, ConfigDefaults.DEFAULT_PORT, this.config);
     }
 
     public Connection(String host, int port) {
