@@ -1,6 +1,6 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
-import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
+import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo.UnaryEchoResponse;
 
 public interface EchoGrpcClient {
     /**
@@ -11,5 +11,5 @@ public interface EchoGrpcClient {
      * @param metadata
      * @return RPC response
      */
-    Echo.UnaryEchoResponse unaryEcho(String message, int timeoutSeconds, GrpcRequestMetadata metadata);
+    UnaryEchoResponse unaryEcho(String message, int timeoutSeconds, GrpcRequestMetadata metadata);
 }
