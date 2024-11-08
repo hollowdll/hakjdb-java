@@ -1,58 +1,43 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
-public class GrpcRequestMetadata {
-    private String database;
-    private String authToken;
+import io.grpc.Metadata;
 
-    private GrpcRequestMetadata(String database, String authToken) {
-        this.database = database;
-        this.authToken = authToken;
+public class GrpcRequestMetadata {
+    private final Metadata metadata;
+
+    public GrpcRequestMetadata() {
+        this.metadata = new Metadata();
+    }
+
+    public GrpcRequestMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
     }
 
     public String getDatabase() {
-        return database;
+        return metadata.get(GrpcMetadataKeys.DATABASE);
     }
 
     public String getAuthToken() {
-        return authToken;
+        return metadata.get(GrpcMetadataKeys.AUTH_TOKEN);
     }
 
     public void setDatabase(String database) {
-        this.database = database;
+        metadata.put(GrpcMetadataKeys.DATABASE, database);
     }
 
     public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String database = "default";
-        private String authToken;
-
-        public GrpcRequestMetadata build() {
-            return new GrpcRequestMetadata(database, authToken);
-        }
-
-        public Builder database(String database) {
-            this.database = database;
-            return this;
-        }
-
-        public Builder authToken(String authToken) {
-            this.authToken = authToken;
-            return this;
-        }
+        metadata.put(GrpcMetadataKeys.AUTH_TOKEN, authToken);
     }
 
     @Override
     public String toString() {
         return "GrpcRequestMetadata{" +
-                "database='" + database + '\'' +
-                ", authToken='" + authToken + '\'' +
+                "database='" + getDatabase() + '\'' +
+                ", authToken='" + getAuthToken() + '\'' +
                 '}';
     }
 }

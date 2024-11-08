@@ -3,6 +3,7 @@ package com.github.hakjdb.hakjdbjava.grpc;
 import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,21 +16,21 @@ public class DefaultGrpcClient implements GrpcClient {
     public DefaultGrpcClient(String host, int port, ClientConfig config) {
         this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
         this.echoClient = new DefaultEchoGrpcClient(this.channel);
-        this.requestMetadata = GrpcRequestMetadata.builder().build();
+        this.requestMetadata = new GrpcRequestMetadata();
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
     public DefaultGrpcClient(String host, int port, ClientConfig config, EchoGrpcClient echoClient) {
         this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
         this.echoClient = echoClient;
-        this.requestMetadata = GrpcRequestMetadata.builder().build();
+        this.requestMetadata = new GrpcRequestMetadata();
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
     public DefaultGrpcClient(ClientConfig config, EchoGrpcClient echoClient) {
         this.channel = null;
         this.echoClient = echoClient;
-        this.requestMetadata = GrpcRequestMetadata.builder().build();
+        this.requestMetadata = new GrpcRequestMetadata();
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
