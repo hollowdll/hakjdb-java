@@ -2,6 +2,7 @@ package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.grpc.GrpcClient;
 
+import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +18,7 @@ public class ConnectionTest {
   @BeforeEach
   void setup() {
     mockedGrpcClient = Mockito.mock(GrpcClient.class);
-    connection = new Connection(mockedGrpcClient);
+    connection = new GrpcConnection(mockedGrpcClient);
   }
 
   @Test
