@@ -2,6 +2,8 @@ package com.github.hakjdb.hakjdbjava.grpc;
 
 import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
+import io.grpc.Channel;
+import io.grpc.ClientInterceptors;
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 
@@ -15,23 +17,18 @@ public class DefaultGrpcClient implements GrpcClient {
 
     public DefaultGrpcClient(String host, int port, ClientConfig config) {
         this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
-        this.echoClient = new DefaultEchoGrpcClient(this.channel);
-        this.requestMetadata = new GrpcRequestMetadata();
+        this.requestMetadata = new GrpcRequestMetadata(config);
+        HeaderClientInterceptor interceptor = new HeaderClientInterceptor(requestMetadata.getMetadata());
+        Channel interceptedChannel = ClientInterceptors.intercept(channel, interceptor);
+        this.echoClient = new DefaultEchoGrpcClient(interceptedChannel);
         this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     }
 
-    public DefaultGrpcClient(String host, int port, ClientConfig config, EchoGrpcClient echoClient) {
-        this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
+    public DefaultGrpcClient(ManagedChannel channel, GrpcRequestMetadata requestMetadata, int requestTimeoutSeconds, EchoGrpcClient echoClient) {
+        this.channel = channel;
         this.echoClient = echoClient;
-        this.requestMetadata = new GrpcRequestMetadata();
-        this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
-    }
-
-    public DefaultGrpcClient(ClientConfig config, EchoGrpcClient echoClient) {
-        this.channel = null;
-        this.echoClient = echoClient;
-        this.requestMetadata = new GrpcRequestMetadata();
-        this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
+        this.requestMetadata = requestMetadata;
+        this.requestTimeoutSeconds = requestTimeoutSeconds;
     }
 
     public int getRequestTimeoutSeconds() {

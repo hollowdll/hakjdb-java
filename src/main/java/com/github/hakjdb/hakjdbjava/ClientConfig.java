@@ -5,13 +5,15 @@ public final class ClientConfig {
     private final int requestTimeoutSeconds;
     private final int disconnectWaitTimeSeconds;
     private final String password;
+    private final boolean usePassword;
     // TODO: SSL/TLS configs
 
-    private ClientConfig(String defaultDatabase, int requestTimeoutSeconds, String password, int disconnectWaitTimeSeconds) {
+    private ClientConfig(String defaultDatabase, int requestTimeoutSeconds, int disconnectWaitTimeSeconds, String password, boolean usePassword) {
         this.defaultDatabase = defaultDatabase;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
         this.disconnectWaitTimeSeconds = disconnectWaitTimeSeconds;
         this.password = password;
+        this.usePassword = usePassword;
     }
 
     public String getDefaultDatabase() {
@@ -30,6 +32,10 @@ public final class ClientConfig {
         return password;
     }
 
+    public boolean isUsePassword() {
+        return usePassword;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -39,9 +45,10 @@ public final class ClientConfig {
         private int requestTimeoutSeconds = ConfigDefaults.DEFAULT_REQUEST_TIMEOUT_SECONDS;
         private int disconnectWaitTimeSeconds = ConfigDefaults.DEFAULT_DISCONNECT_WAIT_TIME_SECONDS;
         private String password = "";
+        private boolean usePassword = ConfigDefaults.DEFAULT_USE_PASSWORD;
 
         public ClientConfig build() {
-            return new ClientConfig(defaultDatabase, requestTimeoutSeconds, password, disconnectWaitTimeSeconds);
+            return new ClientConfig(defaultDatabase, requestTimeoutSeconds, disconnectWaitTimeSeconds, password, usePassword);
         }
 
         public Builder defaultDatabase(String defaultDatabase) {
@@ -63,6 +70,11 @@ public final class ClientConfig {
             this.password = password;
             return this;
         }
+
+        public Builder usePassword(boolean usePassword) {
+            this.usePassword = usePassword;
+            return this;
+        }
     }
 
     @Override
@@ -70,7 +82,9 @@ public final class ClientConfig {
         return "ClientConfig{" +
                 "defaultDatabase='" + defaultDatabase + '\'' +
                 ", requestTimeoutSeconds=" + requestTimeoutSeconds +
+                ", disconnectWaitTimeSeconds=" + disconnectWaitTimeSeconds +
                 ", password='" + password + '\'' +
+                ", usePassword=" + usePassword +
                 '}';
     }
 }

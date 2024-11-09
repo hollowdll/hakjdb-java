@@ -1,36 +1,44 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
+import com.github.hakjdb.hakjdbjava.ClientConfig;
 import io.grpc.Metadata;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class GrpcRequestMetadata {
-    private final Metadata metadata;
+    private final AtomicReference<Metadata> metadataRef;
 
     public GrpcRequestMetadata() {
-        this.metadata = new Metadata();
+        this.metadataRef = new AtomicReference<>(new Metadata());
+    }
+
+    public GrpcRequestMetadata(ClientConfig config) {
+        this.metadataRef = new AtomicReference<>(new Metadata());
+        setDatabase(config.getDefaultDatabase());
     }
 
     public GrpcRequestMetadata(Metadata metadata) {
-        this.metadata = metadata;
+        this.metadataRef = new AtomicReference<>(metadata);
     }
 
-    public Metadata getMetadata() {
-        return metadata;
+    public AtomicReference<Metadata> getMetadata() {
+        return metadataRef;
     }
 
     public String getDatabase() {
-        return metadata.get(GrpcMetadataKeys.DATABASE);
+        return metadataRef.get().get(GrpcMetadataKeys.DATABASE);
     }
 
     public String getAuthToken() {
-        return metadata.get(GrpcMetadataKeys.AUTH_TOKEN);
+        return metadataRef.get().get(GrpcMetadataKeys.AUTH_TOKEN);
     }
 
     public void setDatabase(String database) {
-        metadata.put(GrpcMetadataKeys.DATABASE, database);
+        metadataRef.get().put(GrpcMetadataKeys.DATABASE, database);
     }
 
     public void setAuthToken(String authToken) {
-        metadata.put(GrpcMetadataKeys.AUTH_TOKEN, authToken);
+        metadataRef.get().put(GrpcMetadataKeys.AUTH_TOKEN, authToken);
     }
 
     @Override

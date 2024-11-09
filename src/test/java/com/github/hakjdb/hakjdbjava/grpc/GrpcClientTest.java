@@ -15,17 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GrpcClientTest {
     private EchoGrpcClient mockedEchoClient;
     private GrpcClient grpcClient;
-    private static ClientConfig config;
-
-    @BeforeAll
-    static void init() {
-        config = ClientConfig.builder().build();
-    }
 
     @BeforeEach
     void setup() {
         mockedEchoClient = Mockito.mock(EchoGrpcClient.class);
-        grpcClient = new DefaultGrpcClient(config, mockedEchoClient);
+        grpcClient = new DefaultGrpcClient(null, null, 0, mockedEchoClient);
     }
 
     @Test
