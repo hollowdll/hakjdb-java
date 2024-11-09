@@ -14,8 +14,16 @@ public interface GrpcClient {
     /**
      * Calls the UnaryEcho RPC handler.
      *
-     * @param message Message to send.
-     * @return Received message.
+     * @param message Message to send
+     * @return Received message
      */
     String callUnaryEcho(String message);
+
+    /**
+     * Calls the SetString RPC handler.
+     *
+     * @param key Key to use
+     * @param value Value to store
+     */
+    void callSetString(String key, String value);
 }
