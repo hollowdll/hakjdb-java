@@ -8,14 +8,13 @@ import io.grpc.Channel;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultStringKeyValueGrpcClient implements StringKeyValueGrpcClient {
-    private final StringKVServiceGrpc.StringKVServiceBlockingStub stub;
+  private final StringKVServiceGrpc.StringKVServiceBlockingStub stub;
 
-    public DefaultStringKeyValueGrpcClient(Channel channel) {
-        this.stub = StringKVServiceGrpc.newBlockingStub(channel);
-    }
+  public DefaultStringKeyValueGrpcClient(Channel channel) {
+    this.stub = StringKVServiceGrpc.newBlockingStub(channel);
+  }
 
-    public SetStringResponse setString(SetStringRequest request, int timeoutSeconds) {
-        return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS)
-                .setString(request);
-    }
+  public SetStringResponse setString(SetStringRequest request, int timeoutSeconds) {
+    return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS).setString(request);
+  }
 }

@@ -8,14 +8,13 @@ import io.grpc.Channel;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultEchoGrpcClient implements EchoGrpcClient {
-    private final EchoServiceGrpc.EchoServiceBlockingStub stub;
+  private final EchoServiceGrpc.EchoServiceBlockingStub stub;
 
-    public DefaultEchoGrpcClient(Channel channel) {
-        this.stub = EchoServiceGrpc.newBlockingStub(channel);
-    }
+  public DefaultEchoGrpcClient(Channel channel) {
+    this.stub = EchoServiceGrpc.newBlockingStub(channel);
+  }
 
-    public UnaryEchoResponse unaryEcho(UnaryEchoRequest request, int timeoutSeconds) {
-        return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS)
-                .unaryEcho(request);
-    }
+  public UnaryEchoResponse unaryEcho(UnaryEchoRequest request, int timeoutSeconds) {
+    return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS).unaryEcho(request);
+  }
 }

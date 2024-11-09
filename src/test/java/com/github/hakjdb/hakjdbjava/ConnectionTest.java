@@ -11,22 +11,22 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConnectionTest {
-    private GrpcClient mockedGrpcClient;
-    private Connection connection;
+  private GrpcClient mockedGrpcClient;
+  private Connection connection;
 
-    @BeforeEach
-    void setup() {
-        mockedGrpcClient = Mockito.mock(GrpcClient.class);
-        connection = new Connection(mockedGrpcClient);
-    }
+  @BeforeEach
+  void setup() {
+    mockedGrpcClient = Mockito.mock(GrpcClient.class);
+    connection = new Connection(mockedGrpcClient);
+  }
 
-    @Test
-    public void sendRequestEcho() {
-        String message = "hello";
-        when(mockedGrpcClient.callUnaryEcho(message)).thenReturn(message);
+  @Test
+  public void sendRequestEcho() {
+    String message = "hello";
+    when(mockedGrpcClient.callUnaryEcho(message)).thenReturn(message);
 
-        String result = connection.sendRequestEcho(message);
-        assertEquals(message, result);
-        verify(mockedGrpcClient).callUnaryEcho(message);
-    }
+    String result = connection.sendRequestEcho(message);
+    assertEquals(message, result);
+    verify(mockedGrpcClient).callUnaryEcho(message);
+  }
 }

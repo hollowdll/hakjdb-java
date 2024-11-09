@@ -11,26 +11,26 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GrpcClientTest {
-    private EchoGrpcClient mockedEchoClient;
-    private StringKeyValueGrpcClient mockedStringKeyValueClient;
-    private GrpcClient grpcClient;
+  private EchoGrpcClient mockedEchoClient;
+  private StringKeyValueGrpcClient mockedStringKeyValueClient;
+  private GrpcClient grpcClient;
 
-    @BeforeEach
-    void setup() {
-        mockedEchoClient = Mockito.mock(EchoGrpcClient.class);
-        grpcClient = new DefaultGrpcClient(null, null, 0, mockedEchoClient, mockedStringKeyValueClient);
-    }
+  @BeforeEach
+  void setup() {
+    mockedEchoClient = Mockito.mock(EchoGrpcClient.class);
+    grpcClient = new DefaultGrpcClient(null, null, 0, mockedEchoClient, mockedStringKeyValueClient);
+  }
 
-    @Test
-    public void callUnaryEcho() {
-        String message = "hello";
-        Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
-        Echo.UnaryEchoResponse response = Echo.UnaryEchoResponse.newBuilder().setMsg(message).build();
-        when(mockedEchoClient.unaryEcho(request, grpcClient.getRequestTimeoutSeconds()))
-                .thenReturn(response);
+  @Test
+  public void callUnaryEcho() {
+    String message = "hello";
+    Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
+    Echo.UnaryEchoResponse response = Echo.UnaryEchoResponse.newBuilder().setMsg(message).build();
+    when(mockedEchoClient.unaryEcho(request, grpcClient.getRequestTimeoutSeconds()))
+        .thenReturn(response);
 
-        String result = grpcClient.callUnaryEcho(message);
-        assertEquals(message, result);
-        verify(mockedEchoClient).unaryEcho(request, grpcClient.getRequestTimeoutSeconds());
-    }
+    String result = grpcClient.callUnaryEcho(message);
+    assertEquals(message, result);
+    verify(mockedEchoClient).unaryEcho(request, grpcClient.getRequestTimeoutSeconds());
+  }
 }
