@@ -2,7 +2,6 @@ package com.github.hakjdb.hakjdbjava.grpc;
 
 public interface GrpcClient {
   int getRequestTimeoutSeconds();
-
   GrpcRequestMetadata getRequestMetadata();
 
   /**
@@ -32,7 +31,7 @@ public interface GrpcClient {
    * Calls the GetString RPC handler.
    *
    * @param key Key to use
-   * @return Value of the key
+   * @return Retrieved value
    */
   String callGetString(String key);
 }

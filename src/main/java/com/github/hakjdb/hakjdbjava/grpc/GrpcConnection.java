@@ -55,4 +55,12 @@ public class GrpcConnection implements Connection {
   public String sendRequestEcho(String message) {
     return grpcClient.callUnaryEcho(message);
   }
+
+  public void sendRequestSet(String key, String value) {
+    grpcClient.callSetString(key, value);
+  }
+
+  public String sendRequestGet(String key) {
+    return grpcClient.callGetString(key);
+  }
 }

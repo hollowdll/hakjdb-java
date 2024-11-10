@@ -2,7 +2,7 @@ package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
 
-public class HakjDB implements EchoRequests {
+public class HakjDB implements EchoRequests, StringKeyValueRequests {
   private final Connection connection;
 
   public HakjDB() {
@@ -27,5 +27,15 @@ public class HakjDB implements EchoRequests {
   @Override
   public String echo(String message) {
     return connection.sendRequestEcho(message);
+  }
+
+  @Override
+  public void set(String key, String value) {
+    connection.sendRequestSet(key, value);
+  }
+
+  @Override
+  public String get(String key) {
+    return connection.sendRequestGet(key);
   }
 }
