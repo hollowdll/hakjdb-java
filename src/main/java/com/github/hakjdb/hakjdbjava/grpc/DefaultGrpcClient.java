@@ -1,10 +1,8 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
 import com.github.hakjdb.hakjdbjava.ClientConfig;
-import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo.UnaryEchoRequest;
-import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo.UnaryEchoResponse;
-import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.SetStringRequest;
-import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.SetStringResponse;
+import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
+import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
 import com.google.protobuf.ByteString;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
@@ -68,15 +66,26 @@ public class DefaultGrpcClient implements GrpcClient {
 
   @Override
   public String callUnaryEcho(String message) {
-    UnaryEchoRequest request = UnaryEchoRequest.newBuilder().setMsg(message).build();
-    UnaryEchoResponse response = echoClient.unaryEcho(request, requestTimeoutSeconds);
+    Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
+    Echo.UnaryEchoResponse response = echoClient.unaryEcho(request, requestTimeoutSeconds);
     return response.getMsg();
   }
 
   @Override
   public void callSetString(String key, String value) {
-    SetStringRequest request =
-        SetStringRequest.newBuilder().setKey(key).setValue(ByteString.copyFromUtf8(value)).build();
-    SetStringResponse response = stringKeyValueClient.setString(request, requestTimeoutSeconds);
+    StringKv.SetStringRequest request =
+        StringKv.SetStringRequest.newBuilder()
+            .setKey(key)
+            .setValue(ByteString.copyFromUtf8(value))
+            .build();
+    stringKeyValueClient.setString(request, requestTimeoutSeconds);
+  }
+
+  @Override
+  public String callGetString(String key) {
+    StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
+    StringKv.GetStringResponse response =
+        stringKeyValueClient.getString(request, requestTimeoutSeconds);
+    return response.getValue().toStringUtf8();
   }
 }

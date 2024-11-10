@@ -27,4 +27,12 @@ public interface GrpcClient {
    * @param value Value to store
    */
   void callSetString(String key, String value);
+
+  /**
+   * Calls the GetString RPC handler.
+   *
+   * @param key Key to use
+   * @return Value of the key
+   */
+  String callGetString(String key);
 }

@@ -2,6 +2,8 @@ package com.github.hakjdb.hakjdbjava.grpc;
 
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.SetStringRequest;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.SetStringResponse;
+import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.GetStringRequest;
+import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv.GetStringResponse;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKVServiceGrpc;
 import io.grpc.Channel;
 
@@ -16,5 +18,9 @@ public class DefaultStringKeyValueGrpcClient implements StringKeyValueGrpcClient
 
   public SetStringResponse setString(SetStringRequest request, int timeoutSeconds) {
     return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS).setString(request);
+  }
+
+  public GetStringResponse getString(GetStringRequest request, int timeoutSeconds) {
+    return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS).getString(request);
   }
 }
