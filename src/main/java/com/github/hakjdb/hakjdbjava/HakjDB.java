@@ -1,9 +1,11 @@
 package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
+import com.github.hakjdb.hakjdbjava.requests.EchoRequests;
+import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequests;
 
 public class HakjDB implements EchoRequests, StringKeyValueRequests {
-  private final Connection connection;
+  private final GrpcConnection connection;
 
   public HakjDB() {
     this.connection = new GrpcConnection();

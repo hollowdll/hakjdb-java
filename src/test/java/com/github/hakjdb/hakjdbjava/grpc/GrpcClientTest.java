@@ -21,7 +21,7 @@ public class GrpcClientTest {
   void setup() {
     mockedEchoClient = Mockito.mock(EchoGrpcClient.class);
     mockedStringKeyValueClient = Mockito.mock(StringKeyValueGrpcClient.class);
-    grpcClient = new DefaultGrpcClient(null, null, 0, mockedEchoClient, mockedStringKeyValueClient);
+    grpcClient = new GrpcClient(null, null, 0, mockedEchoClient, mockedStringKeyValueClient);
   }
 
   @Test
@@ -41,10 +41,14 @@ public class GrpcClientTest {
   public void callSetString() {
     String key = "key1";
     String value = "Hello world!";
-    StringKv.SetStringRequest request = StringKv.SetStringRequest.newBuilder().setKey(key).setValue(ByteString.copyFromUtf8(value)).build();
+    StringKv.SetStringRequest request =
+        StringKv.SetStringRequest.newBuilder()
+            .setKey(key)
+            .setValue(ByteString.copyFromUtf8(value))
+            .build();
     StringKv.SetStringResponse response = StringKv.SetStringResponse.newBuilder().build();
     when(mockedStringKeyValueClient.setString(request, grpcClient.getRequestTimeoutSeconds()))
-            .thenReturn(response);
+        .thenReturn(response);
 
     grpcClient.callSetString(key, value);
     verify(mockedStringKeyValueClient).setString(request, grpcClient.getRequestTimeoutSeconds());
@@ -55,9 +59,10 @@ public class GrpcClientTest {
     String key = "key1";
     String value = "Hello world!";
     StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
-    StringKv.GetStringResponse response = StringKv.GetStringResponse.newBuilder().setValue(ByteString.copyFromUtf8(value)).build();
+    StringKv.GetStringResponse response =
+        StringKv.GetStringResponse.newBuilder().setValue(ByteString.copyFromUtf8(value)).build();
     when(mockedStringKeyValueClient.getString(request, grpcClient.getRequestTimeoutSeconds()))
-            .thenReturn(response);
+        .thenReturn(response);
 
     String result = grpcClient.callGetString(key);
     assertEquals(value, result);

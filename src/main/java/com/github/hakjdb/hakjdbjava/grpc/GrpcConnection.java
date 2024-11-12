@@ -4,26 +4,27 @@ import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.ConfigDefaults;
 import com.github.hakjdb.hakjdbjava.Connection;
 import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
+import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
+import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
 
-public class GrpcConnection implements Connection {
+public class GrpcConnection implements Connection, EchoRequestSender, StringKeyValueRequestSender {
   private final ClientConfig config;
   private final GrpcClient grpcClient;
 
   public GrpcConnection() {
     this.config = ClientConfig.builder().build();
     this.grpcClient =
-        new DefaultGrpcClient(
-            ConfigDefaults.DEFAULT_HOST, ConfigDefaults.DEFAULT_PORT, this.config);
+        new GrpcClient(ConfigDefaults.DEFAULT_HOST, ConfigDefaults.DEFAULT_PORT, this.config);
   }
 
   public GrpcConnection(String host, int port) {
     this.config = ClientConfig.builder().build();
-    this.grpcClient = new DefaultGrpcClient(host, port, this.config);
+    this.grpcClient = new GrpcClient(host, port, this.config);
   }
 
   public GrpcConnection(String host, int port, ClientConfig config) {
     this.config = config;
-    this.grpcClient = new DefaultGrpcClient(host, port, config);
+    this.grpcClient = new GrpcClient(host, port, config);
   }
 
   public GrpcConnection(GrpcClient grpcClient) {

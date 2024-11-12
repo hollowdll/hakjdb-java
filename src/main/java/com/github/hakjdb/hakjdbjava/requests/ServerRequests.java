@@ -1,4 +1,4 @@
-package com.github.hakjdb.hakjdbjava;
+package com.github.hakjdb.hakjdbjava.requests;
 
 import java.util.List;
 
