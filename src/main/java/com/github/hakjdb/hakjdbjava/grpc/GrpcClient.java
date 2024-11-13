@@ -1,6 +1,7 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
 import com.github.hakjdb.hakjdbjava.ClientConfig;
+import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
 import com.google.protobuf.ByteString;
@@ -14,6 +15,7 @@ public class GrpcClient {
   private final ManagedChannel channel;
   private final EchoGrpcClient echoClient;
   private final StringKeyValueGrpcClient stringKeyValueClient;
+  private final AuthGrpcClient authClient;
   private final GrpcRequestMetadata requestMetadata;
   private final int requestTimeoutSeconds;
 
@@ -25,6 +27,7 @@ public class GrpcClient {
     Channel interceptedChannel = ClientInterceptors.intercept(channel, interceptor);
     this.echoClient = new EchoGrpcClient(interceptedChannel);
     this.stringKeyValueClient = new StringKeyValueGrpcClient(interceptedChannel);
+    this.authClient = new AuthGrpcClient(interceptedChannel);
     this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
   }
 
@@ -33,12 +36,14 @@ public class GrpcClient {
       GrpcRequestMetadata requestMetadata,
       int requestTimeoutSeconds,
       EchoGrpcClient echoClient,
-      StringKeyValueGrpcClient stringKeyValueClient) {
+      StringKeyValueGrpcClient stringKeyValueClient,
+      AuthGrpcClient authClient) {
     this.channel = channel;
     this.requestMetadata = requestMetadata;
     this.requestTimeoutSeconds = requestTimeoutSeconds;
     this.echoClient = echoClient;
     this.stringKeyValueClient = stringKeyValueClient;
+    this.authClient = authClient;
   }
 
   public int getRequestTimeoutSeconds() {
@@ -66,6 +71,12 @@ public class GrpcClient {
         }
       }
     }
+  }
+
+  public String callAuthenticate(String password) {
+    Auth.AuthenticateRequest request = Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
+    Auth.AuthenticateResponse response = authClient.authenticate(request, requestTimeoutSeconds);
+    return response.getAuthToken();
   }
 
   /**

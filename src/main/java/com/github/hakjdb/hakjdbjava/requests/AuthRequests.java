@@ -1,6 +1,6 @@
 package com.github.hakjdb.hakjdbjava.requests;
 
-public interface AuthenticationRequests {
+public interface AuthRequests {
   /**
    * Authenticates the client with the server password. Returns a JWT token if authentication was
    * successful.

@@ -1,10 +1,11 @@
 package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
+import com.github.hakjdb.hakjdbjava.requests.AuthRequests;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequests;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequests;
 
-public class HakjDB implements EchoRequests, StringKeyValueRequests {
+public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequests {
   private final GrpcConnection connection;
 
   public HakjDB() {
@@ -24,6 +25,11 @@ public class HakjDB implements EchoRequests, StringKeyValueRequests {
 
   public void disconnect() {
     this.connection.disconnect();
+  }
+
+  @Override
+  public String authenticate(String password) {
+    return connection.sendRequestAuthenticate(password);
   }
 
   @Override

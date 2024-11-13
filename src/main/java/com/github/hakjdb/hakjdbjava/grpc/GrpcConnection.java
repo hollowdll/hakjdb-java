@@ -4,10 +4,12 @@ import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.ConfigDefaults;
 import com.github.hakjdb.hakjdbjava.Connection;
 import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
+import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
 
-public class GrpcConnection implements Connection, EchoRequestSender, StringKeyValueRequestSender {
+public class GrpcConnection
+    implements Connection, AuthRequestSender, EchoRequestSender, StringKeyValueRequestSender {
   private final ClientConfig config;
   private final GrpcClient grpcClient;
 
@@ -37,6 +39,7 @@ public class GrpcConnection implements Connection, EchoRequestSender, StringKeyV
     this.grpcClient = grpcClient;
   }
 
+  @Override
   public void connect() throws ConnectionException {
     try {
       sendRequestEcho("");
@@ -45,6 +48,7 @@ public class GrpcConnection implements Connection, EchoRequestSender, StringKeyV
     }
   }
 
+  @Override
   public void disconnect() throws ConnectionException {
     try {
       grpcClient.shutdown(config.getDisconnectWaitTimeSeconds());
@@ -53,14 +57,22 @@ public class GrpcConnection implements Connection, EchoRequestSender, StringKeyV
     }
   }
 
+  @Override
+  public String sendRequestAuthenticate(String password) {
+    return grpcClient.callAuthenticate(password);
+  }
+
+  @Override
   public String sendRequestEcho(String message) {
     return grpcClient.callUnaryEcho(message);
   }
 
+  @Override
   public void sendRequestSet(String key, String value) {
     grpcClient.callSetString(key, value);
   }
 
+  @Override
   public String sendRequestGet(String key) {
     return grpcClient.callGetString(key);
   }
