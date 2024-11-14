@@ -4,10 +4,10 @@ import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
+import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.google.protobuf.ByteString;
-import io.grpc.Channel;
-import io.grpc.ClientInterceptors;
-import io.grpc.ManagedChannel;
+import io.grpc.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +18,7 @@ public class GrpcClient {
   private final AuthGrpcClient authClient;
   private final GrpcRequestMetadata requestMetadata;
   private final int requestTimeoutSeconds;
+  private final String password;
 
   public GrpcClient(String host, int port, ClientConfig config) {
     this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
@@ -29,18 +30,22 @@ public class GrpcClient {
     this.stringKeyValueClient = new StringKeyValueGrpcClient(interceptedChannel);
     this.authClient = new AuthGrpcClient(interceptedChannel);
     this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
+    this.password = config.getPassword();
+    if (config.isUsePassword()) processAuth();
   }
 
   public GrpcClient(
       ManagedChannel channel,
       GrpcRequestMetadata requestMetadata,
       int requestTimeoutSeconds,
+      String password,
       EchoGrpcClient echoClient,
       StringKeyValueGrpcClient stringKeyValueClient,
       AuthGrpcClient authClient) {
     this.channel = channel;
     this.requestMetadata = requestMetadata;
     this.requestTimeoutSeconds = requestTimeoutSeconds;
+    this.password = password;
     this.echoClient = echoClient;
     this.stringKeyValueClient = stringKeyValueClient;
     this.authClient = authClient;
@@ -52,6 +57,15 @@ public class GrpcClient {
 
   public GrpcRequestMetadata getRequestMetadata() {
     return requestMetadata;
+  }
+
+  private void processAuth() {
+    try {
+      String authToken = callAuthenticate(password);
+      requestMetadata.setAuthToken(authToken);
+    } catch (StatusRuntimeException e) {
+      throw new HakjDBConnectionException(e.getMessage());
+    }
   }
 
   /**
@@ -74,7 +88,8 @@ public class GrpcClient {
   }
 
   public String callAuthenticate(String password) {
-    Auth.AuthenticateRequest request = Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
+    Auth.AuthenticateRequest request =
+        Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
     Auth.AuthenticateResponse response = authClient.authenticate(request, requestTimeoutSeconds);
     return response.getAuthToken();
   }
@@ -87,8 +102,15 @@ public class GrpcClient {
    */
   public String callUnaryEcho(String message) {
     Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
-    Echo.UnaryEchoResponse response = echoClient.unaryEcho(request, requestTimeoutSeconds);
-    return response.getMsg();
+    try {
+      return echoClient.unaryEcho(request, requestTimeoutSeconds).getMsg();
+    } catch (StatusRuntimeException e) {
+      if (e.getStatus().getCode() == Status.Code.UNAUTHENTICATED) {
+        processAuth();
+        return echoClient.unaryEcho(request, requestTimeoutSeconds).getMsg();
+      }
+      throw e;
+    }
   }
 
   /**
