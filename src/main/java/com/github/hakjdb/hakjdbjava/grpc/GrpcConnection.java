@@ -3,10 +3,12 @@ package com.github.hakjdb.hakjdbjava.grpc;
 import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.ConfigDefaults;
 import com.github.hakjdb.hakjdbjava.Connection;
-import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBRequestException;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
+import io.grpc.StatusRuntimeException;
 
 public class GrpcConnection
     implements Connection, AuthRequestSender, EchoRequestSender, StringKeyValueRequestSender {
@@ -40,40 +42,61 @@ public class GrpcConnection
   }
 
   @Override
-  public void connect() throws ConnectionException {
+  public void connect() throws HakjDBConnectionException {
     try {
       sendRequestEcho("");
     } catch (Exception e) {
-      throw new ConnectionException("Could not connect", e);
+      throw new HakjDBConnectionException("Could not connect", e);
     }
   }
 
   @Override
-  public void disconnect() throws ConnectionException {
+  public void disconnect() throws HakjDBConnectionException {
     try {
       grpcClient.shutdown(config.getDisconnectWaitTimeSeconds());
     } catch (Exception e) {
-      throw new ConnectionException("Could not disconnect", e);
+      throw new HakjDBConnectionException("Could not disconnect", e);
     }
   }
 
   @Override
   public String sendRequestAuthenticate(String password) {
-    return grpcClient.callAuthenticate(password);
+    try {
+      return grpcClient.callAuthenticate(password);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   @Override
   public String sendRequestEcho(String message) {
-    return grpcClient.callUnaryEcho(message);
+    try {
+      return grpcClient.callUnaryEcho(message);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   @Override
   public void sendRequestSet(String key, String value) {
-    grpcClient.callSetString(key, value);
+    try {
+      grpcClient.callSetString(key, value);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
+
   }
 
   @Override
   public String sendRequestGet(String key) {
-    return grpcClient.callGetString(key);
+    try {
+      return grpcClient.callGetString(key);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
+  }
+
+  private String createRequestFailedMessage(Exception e) {
+    return "Request failed: " + e.getMessage();
   }
 }

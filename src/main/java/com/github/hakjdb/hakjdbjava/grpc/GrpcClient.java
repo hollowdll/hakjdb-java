@@ -4,8 +4,8 @@ import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
-import com.github.hakjdb.hakjdbjava.exceptions.ConnectionException;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
+import com.github.hakjdb.hakjdbjava.util.GrpcUtils;
 import com.google.protobuf.ByteString;
 import io.grpc.*;
 
@@ -64,7 +64,7 @@ public class GrpcClient {
       String authToken = callAuthenticate(password);
       requestMetadata.setAuthToken(authToken);
     } catch (StatusRuntimeException e) {
-      throw new HakjDBConnectionException(e.getMessage());
+      throw new HakjDBConnectionException(e.getMessage(), e);
     }
   }
 
@@ -102,15 +102,18 @@ public class GrpcClient {
    */
   public String callUnaryEcho(String message) {
     Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
+    Echo.UnaryEchoResponse response;
     try {
-      return echoClient.unaryEcho(request, requestTimeoutSeconds).getMsg();
+      response = echoClient.unaryEcho(request, requestTimeoutSeconds);
     } catch (StatusRuntimeException e) {
-      if (e.getStatus().getCode() == Status.Code.UNAUTHENTICATED) {
+      if (GrpcUtils.isUnauthenticated(e)) {
         processAuth();
-        return echoClient.unaryEcho(request, requestTimeoutSeconds).getMsg();
+        response = echoClient.unaryEcho(request, requestTimeoutSeconds);
+      } else {
+        throw e;
       }
-      throw e;
     }
+    return response.getMsg();
   }
 
   /**
@@ -125,7 +128,16 @@ public class GrpcClient {
             .setKey(key)
             .setValue(ByteString.copyFromUtf8(value))
             .build();
-    stringKeyValueClient.setString(request, requestTimeoutSeconds);
+    try {
+      stringKeyValueClient.setString(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        stringKeyValueClient.setString(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
   }
 
   /**
@@ -136,8 +148,17 @@ public class GrpcClient {
    */
   public String callGetString(String key) {
     StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
-    StringKv.GetStringResponse response =
-        stringKeyValueClient.getString(request, requestTimeoutSeconds);
+    StringKv.GetStringResponse response;
+    try {
+      response = stringKeyValueClient.getString(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = stringKeyValueClient.getString(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
     return response.getValue().toStringUtf8();
   }
 }
