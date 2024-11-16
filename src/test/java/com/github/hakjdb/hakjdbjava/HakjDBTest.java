@@ -1,5 +1,7 @@
 package com.github.hakjdb.hakjdbjava;
 
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBRequestException;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,12 +39,26 @@ public class HakjDBTest {
           HakjDB hakjdb = new HakjDB(host, mappedPort);
           assertNotNull(hakjdb);
           hakjdb.disconnect();
-          assertThrows(
-              RuntimeException.class,
-              () -> {
-                hakjdb.echo("");
-              });
+          assertThrows(HakjDBRequestException.class, () -> hakjdb.echo(""));
         });
+  }
+
+  @Test
+  public void authenticate() {
+    GenericContainer<?> hakjdbContainer =
+        new GenericContainer<>(image)
+            .withExposedPorts(containerPort)
+            .withEnv("HAKJ_AUTH_ENABLED", "true");
+    ;
+    hakjdbContainer.start();
+    Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+    String host = hakjdbContainer.getHost();
+
+    HakjDB hakjdb = new HakjDB(host, mappedPort);
+    String password = "";
+    String result = hakjdb.authenticate(password);
+    assertNotNull(result);
+    assertNotEquals("", result);
   }
 
   @Test
@@ -52,8 +68,6 @@ public class HakjDBTest {
     hakjdbContainer.start();
     Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
     String host = hakjdbContainer.getHost();
-    // System.out.printf("[Testcontainers] HakjDB container running at: %s:%d\n", containerHost,
-    // mappedPort);
 
     HakjDB hakjdb = new HakjDB(host, mappedPort);
     String message = "Hello World!";
@@ -95,5 +109,21 @@ public class HakjDBTest {
     hakjdb.set(key, value);
     String result = hakjdb.get(key);
     assertEquals(value, result);
+  }
+
+  @Test
+  public void setStringDatabaseNotFoundShouldThrow() {
+    String database = "test_db";
+    GenericContainer<?> hakjdbContainer =
+        new GenericContainer<>(image).withExposedPorts(containerPort);
+    hakjdbContainer.start();
+    Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+    String host = hakjdbContainer.getHost();
+
+    ClientConfig config = ClientConfig.builder().defaultDatabase(database).build();
+    HakjDB hakjdb = new HakjDB(host, mappedPort, config);
+    String key = "key123";
+    String value = "Hello";
+    assertThrows(HakjDBRequestException.class, () -> hakjdb.set(key, value));
   }
 }

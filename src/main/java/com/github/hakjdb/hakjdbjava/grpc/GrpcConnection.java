@@ -8,7 +8,6 @@ import com.github.hakjdb.hakjdbjava.exceptions.HakjDBRequestException;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
-import io.grpc.StatusRuntimeException;
 
 public class GrpcConnection
     implements Connection, AuthRequestSender, EchoRequestSender, StringKeyValueRequestSender {
