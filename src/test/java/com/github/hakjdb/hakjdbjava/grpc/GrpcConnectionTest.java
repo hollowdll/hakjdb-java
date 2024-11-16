@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +17,17 @@ public class GrpcConnectionTest {
     void setup() {
         mockedGrpcClient = Mockito.mock(GrpcClient.class);
         connection = new GrpcConnection(mockedGrpcClient);
+    }
+
+    @Test
+    public void sendRequestAuthenticate() {
+        String password = "pass123";
+        String authToken = "asds-adsad-12345-6789";
+        when(mockedGrpcClient.callAuthenticate(password)).thenReturn(authToken);
+
+        String result = connection.sendRequestAuthenticate(password);
+        assertEquals(authToken, result);
+        verify(mockedGrpcClient).callAuthenticate(password);
     }
 
     @Test
@@ -44,6 +56,16 @@ public class GrpcConnectionTest {
 
         String result = connection.sendRequestGet(key);
         assertEquals(value, result);
+        verify(mockedGrpcClient).callGetString(key);
+    }
+
+    @Test
+    public void sendRequestGetKeyNotFound() {
+        String key = "key1";
+        when(mockedGrpcClient.callGetString(key)).thenReturn(null);
+
+        String result = connection.sendRequestGet(key);
+        assertNull(result);
         verify(mockedGrpcClient).callGetString(key);
     }
 }

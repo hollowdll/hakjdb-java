@@ -1,5 +1,6 @@
 package com.github.hakjdb.hakjdbjava.grpc;
 
+import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +25,26 @@ public class GrpcClientTest {
     mockedEchoClient = Mockito.mock(EchoGrpcClient.class);
     mockedStringKeyValueClient = Mockito.mock(StringKeyValueGrpcClient.class);
     mockedAuthClient = Mockito.mock(AuthGrpcClient.class);
-    grpcClient = new GrpcClient(null, null, 0, mockedEchoClient, mockedStringKeyValueClient, mockedAuthClient);
+    grpcClient =
+        new GrpcClient(
+            null, null, 0, "", mockedEchoClient, mockedStringKeyValueClient, mockedAuthClient);
+  }
+
+  @Test
+  public void callAuthenticate() {
+    String password = "pass123";
+    String authToken = "asd-123-fgh-456";
+    Auth.AuthenticateRequest request =
+        Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
+    Auth.AuthenticateResponse response =
+        Auth.AuthenticateResponse.newBuilder().setAuthToken(authToken).build();
+
+    when(mockedAuthClient.authenticate(request, grpcClient.getRequestTimeoutSeconds()))
+        .thenReturn(response);
+
+    String result = grpcClient.callAuthenticate(password);
+    assertEquals(authToken, result);
+    verify(mockedAuthClient).authenticate(request, grpcClient.getRequestTimeoutSeconds());
   }
 
   @Test
@@ -31,6 +52,7 @@ public class GrpcClientTest {
     String message = "hello";
     Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
     Echo.UnaryEchoResponse response = Echo.UnaryEchoResponse.newBuilder().setMsg(message).build();
+
     when(mockedEchoClient.unaryEcho(request, grpcClient.getRequestTimeoutSeconds()))
         .thenReturn(response);
 
@@ -49,6 +71,7 @@ public class GrpcClientTest {
             .setValue(ByteString.copyFromUtf8(value))
             .build();
     StringKv.SetStringResponse response = StringKv.SetStringResponse.newBuilder().build();
+
     when(mockedStringKeyValueClient.setString(request, grpcClient.getRequestTimeoutSeconds()))
         .thenReturn(response);
 
@@ -62,12 +85,28 @@ public class GrpcClientTest {
     String value = "Hello world!";
     StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
     StringKv.GetStringResponse response =
-        StringKv.GetStringResponse.newBuilder().setValue(ByteString.copyFromUtf8(value)).build();
+        StringKv.GetStringResponse.newBuilder().setValue(ByteString.copyFromUtf8(value)).setOk(true).build();
+
     when(mockedStringKeyValueClient.getString(request, grpcClient.getRequestTimeoutSeconds()))
         .thenReturn(response);
 
     String result = grpcClient.callGetString(key);
     assertEquals(value, result);
+    verify(mockedStringKeyValueClient).getString(request, grpcClient.getRequestTimeoutSeconds());
+  }
+
+  @Test
+  public void callGetStringKeyNotFound() {
+    String key = "key1";
+    StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
+    StringKv.GetStringResponse response =
+            StringKv.GetStringResponse.newBuilder().setValue(ByteString.empty()).setOk(false).build();
+
+    when(mockedStringKeyValueClient.getString(request, grpcClient.getRequestTimeoutSeconds()))
+            .thenReturn(response);
+
+    String result = grpcClient.callGetString(key);
+    assertNull(result);
     verify(mockedStringKeyValueClient).getString(request, grpcClient.getRequestTimeoutSeconds());
   }
 }

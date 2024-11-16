@@ -13,7 +13,7 @@ public interface StringKeyValueRequests {
    * Returns the value of a String key.
    *
    * @param key Key to use
-   * @return Retrieved value
+   * @return Retrieved value or null if key doesn't exist
    */
   String get(String key);
 }

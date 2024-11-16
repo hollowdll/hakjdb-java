@@ -13,7 +13,7 @@ public interface StringKeyValueRequestSender {
      * Send get request.
      *
      * @param key Key to use
-     * @return Retrieved value
+     * @return Retrieved value or null if key doesn't exist
      */
     String sendRequestGet(String key);
 }

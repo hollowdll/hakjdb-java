@@ -87,6 +87,12 @@ public class GrpcClient {
     }
   }
 
+  /**
+   * Calls the Authenticate RPC handler.
+   *
+   * @param password Server password
+   * @return JWT token
+   */
   public String callAuthenticate(String password) {
     Auth.AuthenticateRequest request =
         Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
@@ -144,7 +150,7 @@ public class GrpcClient {
    * Calls the GetString RPC handler.
    *
    * @param key Key to use
-   * @return Retrieved value
+   * @return Retrieved value or null if key doesn't exist.
    */
   public String callGetString(String key) {
     StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
@@ -159,6 +165,6 @@ public class GrpcClient {
         throw e;
       }
     }
-    return response.getValue().toStringUtf8();
+    return response.getOk() ? response.getValue().toStringUtf8() : null;
   }
 }
