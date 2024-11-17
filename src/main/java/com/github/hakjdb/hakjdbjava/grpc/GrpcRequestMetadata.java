@@ -34,7 +34,7 @@ public class GrpcRequestMetadata {
   }
 
   public void setDatabase(String database) {
-    metadataRef.get().removeAll(GrpcMetadataKeys.AUTH_TOKEN);
+    metadataRef.get().removeAll(GrpcMetadataKeys.DATABASE);
     metadataRef.get().put(GrpcMetadataKeys.DATABASE, database);
   }
 
