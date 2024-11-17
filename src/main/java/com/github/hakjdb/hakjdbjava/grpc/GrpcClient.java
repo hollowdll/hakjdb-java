@@ -4,6 +4,7 @@ import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBAuthException;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.util.GrpcUtils;
 import com.google.protobuf.ByteString;
@@ -31,7 +32,14 @@ public class GrpcClient {
     this.authClient = new AuthGrpcClient(interceptedChannel);
     this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     this.password = config.getPassword();
-    if (config.isUsePassword()) processAuth();
+
+    try {
+      if (config.isUsePassword()) processAuth();
+    } catch (HakjDBAuthException e) {
+      throw new HakjDBConnectionException(
+          "Could not authenticate the client when establishing connection: "
+              + e.getCause().getMessage());
+    }
   }
 
   public GrpcClient(
@@ -64,7 +72,7 @@ public class GrpcClient {
       String authToken = callAuthenticate(password);
       requestMetadata.setAuthToken(authToken);
     } catch (StatusRuntimeException e) {
-      throw new HakjDBConnectionException(e.getMessage(), e);
+      throw new HakjDBAuthException("Could not obtain auth token: " + e.getMessage(), e);
     }
   }
 

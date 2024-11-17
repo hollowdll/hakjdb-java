@@ -44,6 +44,60 @@ public class HakjDBTest {
   }
 
   @Test
+  public void connectAuthEnabled() {
+    assertDoesNotThrow(
+        () -> {
+          String password = "pass1234";
+          GenericContainer<?> hakjdbContainer =
+              new GenericContainer<>(image)
+                  .withExposedPorts(containerPort)
+                  .withEnv("HAKJ_AUTH_ENABLED", "true")
+                  .withEnv("HAKJ_PASSWORD", password);
+          hakjdbContainer.start();
+          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+          String host = hakjdbContainer.getHost();
+
+          ClientConfig config = ClientConfig.builder().usePassword(true).password(password).build();
+          new HakjDB(host, mappedPort, config);
+        });
+  }
+
+  @Test
+  public void connectAuthEnabledNotUsingPasswordShouldThrow() {
+    assertThrows(
+        HakjDBConnectionException.class,
+        () -> {
+          GenericContainer<?> hakjdbContainer =
+              new GenericContainer<>(image)
+                  .withExposedPorts(containerPort)
+                  .withEnv("HAKJ_AUTH_ENABLED", "true")
+                  .withEnv("HAKJ_PASSWORD", "pass1234");
+          hakjdbContainer.start();
+          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+          String host = hakjdbContainer.getHost();
+
+          ClientConfig config = ClientConfig.builder().build();
+          new HakjDB(host, mappedPort, config);
+        });
+  }
+
+  @Test
+  public void connectAuthNotEnabledUsingPasswordShouldThrow() {
+    assertThrows(
+        HakjDBConnectionException.class,
+        () -> {
+          GenericContainer<?> hakjdbContainer =
+              new GenericContainer<>(image).withExposedPorts(containerPort);
+          hakjdbContainer.start();
+          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+          String host = hakjdbContainer.getHost();
+
+          ClientConfig config = ClientConfig.builder().usePassword(true).build();
+          new HakjDB(host, mappedPort, config);
+        });
+  }
+
+  @Test
   public void authenticate() {
     GenericContainer<?> hakjdbContainer =
         new GenericContainer<>(image)
@@ -122,8 +176,27 @@ public class HakjDBTest {
 
     ClientConfig config = ClientConfig.builder().defaultDatabase(database).build();
     HakjDB hakjdb = new HakjDB(host, mappedPort, config);
-    String key = "key123";
-    String value = "Hello";
-    assertThrows(HakjDBRequestException.class, () -> hakjdb.set(key, value));
+    assertThrows(HakjDBRequestException.class, () -> hakjdb.set("key1", "value"));
+  }
+
+  @Test
+  public void setStringObtainNewAuthTokenAfterExpire() {
+    GenericContainer<?> hakjdbContainer =
+        new GenericContainer<>(image)
+            .withExposedPorts(containerPort)
+            .withEnv("HAKJ_AUTH_ENABLED", "true")
+            .withEnv("HAKJ_AUTH_TOKEN_TTL", "1");
+    hakjdbContainer.start();
+    Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
+    String host = hakjdbContainer.getHost();
+
+    ClientConfig config = ClientConfig.builder().usePassword(true).build();
+    HakjDB hakjdb = new HakjDB(host, mappedPort, config);
+
+    assertDoesNotThrow(
+        () -> {
+          Thread.sleep(1100);
+          hakjdb.set("key1", "value");
+        });
   }
 }
