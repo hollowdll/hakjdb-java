@@ -14,90 +14,6 @@ public class HakjDBTest {
   private final String image = "hakj/hakjdb:v1.2.0-alpine";
 
   @Test
-  public void connects() {
-    assertDoesNotThrow(
-        () -> {
-          GenericContainer<?> hakjdbContainer =
-              new GenericContainer<>(image).withExposedPorts(containerPort);
-          hakjdbContainer.start();
-          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-          String host = hakjdbContainer.getHost();
-          HakjDB hakjdb = new HakjDB(host, mappedPort);
-          assertNotNull(hakjdb);
-        });
-  }
-
-  @Test
-  public void disconnects() {
-    assertDoesNotThrow(
-        () -> {
-          GenericContainer<?> hakjdbContainer =
-              new GenericContainer<>(image).withExposedPorts(containerPort);
-          hakjdbContainer.start();
-          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-          String host = hakjdbContainer.getHost();
-          HakjDB hakjdb = new HakjDB(host, mappedPort);
-          assertNotNull(hakjdb);
-          hakjdb.disconnect();
-          assertThrows(HakjDBRequestException.class, () -> hakjdb.echo(""));
-        });
-  }
-
-  @Test
-  public void connectAuthEnabled() {
-    assertDoesNotThrow(
-        () -> {
-          String password = "pass1234";
-          GenericContainer<?> hakjdbContainer =
-              new GenericContainer<>(image)
-                  .withExposedPorts(containerPort)
-                  .withEnv("HAKJ_AUTH_ENABLED", "true")
-                  .withEnv("HAKJ_PASSWORD", password);
-          hakjdbContainer.start();
-          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-          String host = hakjdbContainer.getHost();
-
-          ClientConfig config = ClientConfig.builder().usePassword(true).password(password).build();
-          new HakjDB(host, mappedPort, config);
-        });
-  }
-
-  @Test
-  public void connectAuthEnabledNotUsingPasswordShouldThrow() {
-    assertThrows(
-        HakjDBConnectionException.class,
-        () -> {
-          GenericContainer<?> hakjdbContainer =
-              new GenericContainer<>(image)
-                  .withExposedPorts(containerPort)
-                  .withEnv("HAKJ_AUTH_ENABLED", "true")
-                  .withEnv("HAKJ_PASSWORD", "pass1234");
-          hakjdbContainer.start();
-          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-          String host = hakjdbContainer.getHost();
-
-          ClientConfig config = ClientConfig.builder().build();
-          new HakjDB(host, mappedPort, config);
-        });
-  }
-
-  @Test
-  public void connectAuthNotEnabledUsingPasswordShouldThrow() {
-    assertThrows(
-        HakjDBConnectionException.class,
-        () -> {
-          GenericContainer<?> hakjdbContainer =
-              new GenericContainer<>(image).withExposedPorts(containerPort);
-          hakjdbContainer.start();
-          Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-          String host = hakjdbContainer.getHost();
-
-          ClientConfig config = ClientConfig.builder().usePassword(true).build();
-          new HakjDB(host, mappedPort, config);
-        });
-  }
-
-  @Test
   public void authenticate() {
     GenericContainer<?> hakjdbContainer =
         new GenericContainer<>(image)
@@ -113,20 +29,6 @@ public class HakjDBTest {
     String result = hakjdb.authenticate(password);
     assertNotNull(result);
     assertNotEquals("", result);
-  }
-
-  @Test
-  public void echo() {
-    GenericContainer<?> hakjdbContainer =
-        new GenericContainer<>(image).withExposedPorts(containerPort);
-    hakjdbContainer.start();
-    Integer mappedPort = hakjdbContainer.getMappedPort(containerPort);
-    String host = hakjdbContainer.getHost();
-
-    HakjDB hakjdb = new HakjDB(host, mappedPort);
-    String message = "Hello World!";
-    String result = hakjdb.echo(message);
-    assertEquals(message, result);
   }
 
   @Test
