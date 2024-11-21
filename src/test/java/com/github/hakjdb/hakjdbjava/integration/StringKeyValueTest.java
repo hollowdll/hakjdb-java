@@ -19,9 +19,14 @@ public class StringKeyValueTest {
   private static final GenericContainer<?> sharedHakjdbContainer =
       ContainerFactory.createDefaultHakjDBContainer();
 
+  @Container
+  private static final GenericContainer<?> authTokenExpireHakjdbContainer =
+      ContainerFactory.createAuthTokenExpireHakjDBContainer();
+
   @BeforeAll
   static void setUp() {
     sharedHakjdbContainer.start();
+    authTokenExpireHakjdbContainer.start();
   }
 
   @Test
@@ -70,23 +75,33 @@ public class StringKeyValueTest {
   }
 
   @Test
-  public void setStringObtainNewAuthTokenAfterExpire() {
-    GenericContainer<?> hakjdbContainer =
-        new GenericContainer<>(TestDefaults.HAKJDB_IMAGE)
-            .withExposedPorts(TestDefaults.HAKJDB_CONTAINER_PORT)
-            .withEnv("HAKJ_AUTH_ENABLED", "true")
-            .withEnv("HAKJ_AUTH_TOKEN_TTL", "1");
-    hakjdbContainer.start();
-    Integer mappedPort = hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT);
-    String host = hakjdbContainer.getHost();
-
+  public void getStringObtainNewAuthTokenAfterExpire() {
+    Integer mappedPort =
+        authTokenExpireHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT);
+    String host = authTokenExpireHakjdbContainer.getHost();
     ClientConfig config = ClientConfig.builder().usePassword(true).build();
     HakjDB hakjdb = new HakjDB(host, mappedPort, config);
 
     assertDoesNotThrow(
         () -> {
           Thread.sleep(1100);
-          hakjdb.set("key4", "value");
+          hakjdb.get("key4");
+          hakjdb.disconnect();
+        });
+  }
+
+  @Test
+  public void setStringObtainNewAuthTokenAfterExpire() {
+    Integer mappedPort =
+        authTokenExpireHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT);
+    String host = authTokenExpireHakjdbContainer.getHost();
+    ClientConfig config = ClientConfig.builder().usePassword(true).build();
+    HakjDB hakjdb = new HakjDB(host, mappedPort, config);
+
+    assertDoesNotThrow(
+        () -> {
+          Thread.sleep(1100);
+          hakjdb.set("key5", "value");
           hakjdb.disconnect();
         });
   }

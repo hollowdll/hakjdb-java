@@ -17,9 +17,14 @@ public class EchoTest {
   private static final GenericContainer<?> sharedHakjdbContainer =
       ContainerFactory.createDefaultHakjDBContainer();
 
+  @Container
+  private static final GenericContainer<?> authTokenExpireHakjdbContainer =
+      ContainerFactory.createAuthTokenExpireHakjDBContainer();
+
   @BeforeAll
   static void setUp() {
     sharedHakjdbContainer.start();
+    authTokenExpireHakjdbContainer.start();
   }
 
   @Test
@@ -32,5 +37,20 @@ public class EchoTest {
     String result = hakjdb.echo(message);
     assertEquals(message, result);
     hakjdb.disconnect();
+  }
+
+  @Test
+  public void echoObtainNewAuthTokenAfterExpire() {
+    Integer mappedPort =
+        authTokenExpireHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT);
+    String host = authTokenExpireHakjdbContainer.getHost();
+    HakjDB hakjdb = new HakjDB(host, mappedPort);
+
+    assertDoesNotThrow(
+        () -> {
+          Thread.sleep(1100);
+          hakjdb.echo("message");
+          hakjdb.disconnect();
+        });
   }
 }
