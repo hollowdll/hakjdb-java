@@ -31,5 +31,6 @@ public class EchoTest {
     String message = "Hello World!";
     String result = hakjdb.echo(message);
     assertEquals(message, result);
+    hakjdb.disconnect();
   }
 }

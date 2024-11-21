@@ -34,6 +34,7 @@ public class ConnectionTest {
                   sharedHakjdbContainer.getHost(),
                   sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT));
           assertNotNull(hakjdb);
+          hakjdb.disconnect();
         });
   }
 
@@ -64,10 +65,12 @@ public class ConnectionTest {
           hakjdbContainer.start();
 
           ClientConfig config = ClientConfig.builder().usePassword(true).password(password).build();
-          new HakjDB(
-              hakjdbContainer.getHost(),
-              hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
-              config);
+          HakjDB hakjdb =
+              new HakjDB(
+                  hakjdbContainer.getHost(),
+                  hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
+                  config);
+          hakjdb.disconnect();
         });
   }
 
@@ -84,10 +87,12 @@ public class ConnectionTest {
           hakjdbContainer.start();
 
           ClientConfig config = ClientConfig.builder().build();
-          new HakjDB(
-              hakjdbContainer.getHost(),
-              hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
-              config);
+          HakjDB hakjdb =
+              new HakjDB(
+                  hakjdbContainer.getHost(),
+                  hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
+                  config);
+          hakjdb.disconnect();
         });
   }
 
@@ -97,10 +102,12 @@ public class ConnectionTest {
         HakjDBConnectionException.class,
         () -> {
           ClientConfig config = ClientConfig.builder().usePassword(true).build();
-          new HakjDB(
-              sharedHakjdbContainer.getHost(),
-              sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
-              config);
+          HakjDB hakjdb =
+              new HakjDB(
+                  sharedHakjdbContainer.getHost(),
+                  sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
+                  config);
+          hakjdb.disconnect();
         });
   }
 }
