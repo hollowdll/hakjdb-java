@@ -34,6 +34,7 @@ public class StringKeyValueTest {
     hakjdb.set(key, value);
     String result = hakjdb.get(key);
     assertEquals(value, result);
+    hakjdb.disconnect();
   }
 
   @Test
