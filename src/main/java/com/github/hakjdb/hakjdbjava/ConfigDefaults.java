@@ -7,6 +7,10 @@ public final class ConfigDefaults {
   public static final int DEFAULT_REQUEST_TIMEOUT_SECONDS = 10;
   public static final int DEFAULT_DISCONNECT_WAIT_TIME_SECONDS = 5;
   public static final boolean DEFAULT_USE_PASSWORD = false;
+  public static final String DEFAULT_PASSWORD = "";
   public static final boolean DEFAULT_USE_TLS = false;
   public static final boolean DEFAULT_USE_CLIENT_CERT_AUTH = false;
+  public static final String DEFAULT_TLS_CA_CERT_PATH = "";
+  public static final String DEFAULT_TLS_CLIENT_CERT_PATH = "";
+  public static final String DEFAULT_TLS_CLIENT_KEY_PATH = "";
 }
