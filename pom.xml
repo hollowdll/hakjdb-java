@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <grpc.version>1.67.1</grpc.version>
+        <grpc.version>1.68.1</grpc.version>
         <protoc.version>3.25.5</protoc.version>
         <protobuf.version>4.28.2</protobuf.version>
     </properties>
@@ -49,11 +49,6 @@
             <artifactId>grpc-netty-shaded</artifactId>
             <version>${grpc.version}</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty</artifactId>
-            <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -140,8 +135,8 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>8</release>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 

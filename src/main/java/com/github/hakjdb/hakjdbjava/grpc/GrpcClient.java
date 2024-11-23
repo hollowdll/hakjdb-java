@@ -9,9 +9,8 @@ import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.util.GrpcUtils;
 import com.google.protobuf.ByteString;
 import io.grpc.*;
-import io.netty.handler.ssl.SslContext;
 
-import javax.net.ssl.SSLException;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class GrpcClient {
@@ -25,8 +24,8 @@ public class GrpcClient {
 
   public GrpcClient(String host, int port, ClientConfig config) {
     if (config.isUseTLS()) {
-      SslContext sslContext = determineSslContext(config);
-      this.channel = ManagedChannelFactory.createSecureChannel(host, port, sslContext);
+      ChannelCredentials channelCredentials = determineChannelCredentials(config);
+      this.channel = ManagedChannelFactory.createSecureChannel(host, port, channelCredentials);
     } else {
       this.channel = ManagedChannelFactory.createInsecureChannel(host, port);
     }
@@ -84,18 +83,18 @@ public class GrpcClient {
     }
   }
 
-  private SslContext determineSslContext(ClientConfig config) {
+  private ChannelCredentials determineChannelCredentials(ClientConfig config) {
     if (config.isUseClientCertAuth()) {
       try {
-        return GrpcSSLFactory.createClientCertAuthSSLContext(
+        return GrpcChannelCredentialsFactory.createMutualTLSChannelCredentials(
             config.getTlsCACertPath(), config.getTlsClientCertPath(), config.getTlsClientKeyPath());
-      } catch (SSLException e) {
+      } catch (IOException e) {
         throw new HakjDBConnectionException("Could not establish mTLS connection", e);
       }
     } else {
       try {
-        return GrpcSSLFactory.createSSLContext(config.getTlsCACertPath());
-      } catch (SSLException e) {
+        return GrpcChannelCredentialsFactory.createTLSChannelCredentials(config.getTlsCACertPath());
+      } catch (IOException e) {
         throw new HakjDBConnectionException("Could not establish TLS connection", e);
       }
     }
