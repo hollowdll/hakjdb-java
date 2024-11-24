@@ -110,4 +110,26 @@ public class ConnectionTest {
           hakjdb.disconnect();
         });
   }
+
+  @Test
+  public void connectTLSEnabled() {
+    assertDoesNotThrow(
+        () -> {
+          String password = "pass1234";
+          GenericContainer<?> hakjdbContainer =
+              new GenericContainer<>(TestDefaults.HAKJDB_IMAGE)
+                  .withExposedPorts(TestDefaults.HAKJDB_CONTAINER_PORT)
+                  .withEnv("HAKJ_AUTH_ENABLED", "true")
+                  .withEnv("HAKJ_PASSWORD", password);
+          hakjdbContainer.start();
+
+          ClientConfig config = ClientConfig.builder().usePassword(true).password(password).build();
+          HakjDB hakjdb =
+              new HakjDB(
+                  hakjdbContainer.getHost(),
+                  hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
+                  config);
+          hakjdb.disconnect();
+        });
+  }
 }
