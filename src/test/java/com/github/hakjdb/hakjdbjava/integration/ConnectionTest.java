@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
+
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -115,15 +118,31 @@ public class ConnectionTest {
   public void connectTLSEnabled() {
     assertDoesNotThrow(
         () -> {
-          String password = "pass1234";
+          ClassLoader classLoader = getClass().getClassLoader();
+          String caCertPath =
+              Paths.get(classLoader.getResource("ca-cert.pem").toURI()).toAbsolutePath().toString();
+          String serverCertPath =
+              Paths.get(classLoader.getResource("server-cert.pem").toURI())
+                  .toAbsolutePath()
+                  .toString();
+          String serverKeyPath =
+              Paths.get(classLoader.getResource("server-key.pem").toURI())
+                  .toAbsolutePath()
+                  .toString();
           GenericContainer<?> hakjdbContainer =
               new GenericContainer<>(TestDefaults.HAKJDB_IMAGE)
                   .withExposedPorts(TestDefaults.HAKJDB_CONTAINER_PORT)
-                  .withEnv("HAKJ_AUTH_ENABLED", "true")
-                  .withEnv("HAKJ_PASSWORD", password);
+                  .withCopyFileToContainer(
+                      MountableFile.forHostPath(serverCertPath), "/hakjdb/server-cert.pem")
+                  .withCopyFileToContainer(
+                      MountableFile.forHostPath(serverKeyPath), "/hakjdb/server-key.pem")
+                  .withEnv("HAKJ_TLS_ENABLED", "true")
+                  .withEnv("HAKJ_TLS_CERT_PATH", "/hakjdb/server-cert.pem")
+                  .withEnv("HAKJ_TLS_PRIVATE_KEY_PATH", "/hakjdb/server-key.pem");
           hakjdbContainer.start();
 
-          ClientConfig config = ClientConfig.builder().usePassword(true).password(password).build();
+          ClientConfig config =
+              ClientConfig.builder().useTLS(true).tlsCACertPath(caCertPath).build();
           HakjDB hakjdb =
               new HakjDB(
                   hakjdbContainer.getHost(),

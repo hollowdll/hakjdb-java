@@ -89,13 +89,13 @@ public class GrpcClient {
         return GrpcChannelCredentialsFactory.createMutualTLSChannelCredentials(
             config.getTlsCACertPath(), config.getTlsClientCertPath(), config.getTlsClientKeyPath());
       } catch (IOException e) {
-        throw new HakjDBConnectionException("Could not establish mTLS connection", e);
+        throw new HakjDBConnectionException("Could not establish mTLS connection with CA cert, client cert and client key", e);
       }
     } else {
       try {
         return GrpcChannelCredentialsFactory.createTLSChannelCredentials(config.getTlsCACertPath());
       } catch (IOException e) {
-        throw new HakjDBConnectionException("Could not establish TLS connection", e);
+        throw new HakjDBConnectionException("Could not establish TLS connection with CA cert", e);
       }
     }
   }
