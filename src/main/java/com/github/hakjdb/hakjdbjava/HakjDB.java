@@ -1,5 +1,6 @@
 package com.github.hakjdb.hakjdbjava;
 
+import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequests;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequests;
@@ -9,22 +10,55 @@ public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequest
   private final GrpcConnection connection;
 
   public HakjDB() {
-    this.connection = new GrpcConnection();
-    this.connection.connect();
+    try {
+      this.connection = new GrpcConnection();
+      this.connection.connect();
+    } catch (HakjDBConnectionException e) {
+      disconnectNow();
+      throw e;
+    }
   }
 
   public HakjDB(String host, int port) {
-    this.connection = new GrpcConnection(host, port);
-    this.connection.connect();
+    try {
+      this.connection = new GrpcConnection(host, port);
+      this.connection.connect();
+    } catch (HakjDBConnectionException e) {
+      disconnectNow();
+      throw e;
+    }
   }
 
   public HakjDB(String host, int port, ClientConfig config) {
-    this.connection = new GrpcConnection(host, port, config);
-    this.connection.connect();
+    try {
+      this.connection = new GrpcConnection(host, port, config);
+      this.connection.connect();
+    } catch (HakjDBConnectionException e) {
+      disconnectNow();
+      throw e;
+    }
   }
 
+  /**
+   * Disconnect from the HakjDB server.
+   * This method closes the connection gracefully.
+   */
   public void disconnect() {
-    this.connection.disconnect();
+    if (connection != null) {
+      connection.disconnect();
+    }
+  }
+
+  /**
+   * Disconnect from the HakjDB server.
+   * This method closes the connection immediately.
+   * If there are requests being processed when this is called,
+   * they may get interrupted.
+   */
+  public void disconnectNow() {
+    if (connection != null) {
+      connection.disconnectNow();
+    }
   }
 
   @Override

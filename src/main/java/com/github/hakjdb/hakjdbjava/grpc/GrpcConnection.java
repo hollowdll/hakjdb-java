@@ -59,6 +59,15 @@ public class GrpcConnection
   }
 
   @Override
+  public void disconnectNow() throws HakjDBConnectionException {
+    try {
+      grpcClient.forcefulShutdown();
+    } catch (Exception e) {
+      throw new HakjDBConnectionException("Could not disconnect", e);
+    }
+  }
+
+  @Override
   public String sendRequestAuthenticate(String password) {
     try {
       return grpcClient.callAuthenticate(password);

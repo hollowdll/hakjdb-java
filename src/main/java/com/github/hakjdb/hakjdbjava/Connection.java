@@ -11,9 +11,16 @@ public interface Connection {
   void connect() throws HakjDBConnectionException;
 
   /**
-   * Disconnect from the server.
+   * Disconnect from the server gracefully.
    *
    * @throws HakjDBConnectionException
    */
   void disconnect() throws HakjDBConnectionException;
+
+  /**
+   * Disconnect from the server immediately.
+   *
+   * @throws HakjDBConnectionException
+   */
+  void disconnectNow() throws HakjDBConnectionException;
 }

@@ -39,7 +39,7 @@ public class StringKeyValueTest {
     hakjdb.set(key, value);
     String result = hakjdb.get(key);
     assertEquals(value, result);
-    hakjdb.disconnect();
+    hakjdb.disconnectNow();
   }
 
   @Test
@@ -60,7 +60,7 @@ public class StringKeyValueTest {
     hakjdb.set(key, value);
     String result = hakjdb.get(key);
     assertEquals(value, result);
-    hakjdb.disconnect();
+    hakjdb.disconnectNow();
   }
 
   @Test
@@ -71,7 +71,7 @@ public class StringKeyValueTest {
     ClientConfig config = ClientConfig.builder().defaultDatabase(database).build();
     HakjDB hakjdb = new HakjDB(host, mappedPort, config);
     assertThrows(HakjDBRequestException.class, () -> hakjdb.set("key3", "value"));
-    hakjdb.disconnect();
+    hakjdb.disconnectNow();
   }
 
   @Test
@@ -86,7 +86,7 @@ public class StringKeyValueTest {
         () -> {
           Thread.sleep(1100);
           hakjdb.get("key4");
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 
@@ -102,7 +102,7 @@ public class StringKeyValueTest {
         () -> {
           Thread.sleep(1100);
           hakjdb.set("key5", "value");
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 }

@@ -36,7 +36,7 @@ public class EchoTest {
     String message = "Hello World!";
     String result = hakjdb.echo(message);
     assertEquals(message, result);
-    hakjdb.disconnect();
+    hakjdb.disconnectNow();
   }
 
   @Test
@@ -50,7 +50,7 @@ public class EchoTest {
         () -> {
           Thread.sleep(1100);
           hakjdb.echo("message");
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 }

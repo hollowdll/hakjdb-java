@@ -43,6 +43,7 @@ public class GrpcClient {
     try {
       if (config.isUsePassword()) processAuth();
     } catch (HakjDBAuthException e) {
+      forcefulShutdown();
       throw new HakjDBConnectionException(
           "Could not authenticate the client when establishing connection: "
               + e.getCause().getMessage());
@@ -116,6 +117,15 @@ public class GrpcClient {
           channel.shutdownNow();
         }
       }
+    }
+  }
+
+  /**
+   * Shuts down the client channel immediately.
+   */
+  public void forcefulShutdown() {
+    if (channel != null && !channel.isShutdown()) {
+      channel.shutdownNow();
     }
   }
 

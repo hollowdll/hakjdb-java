@@ -26,6 +26,6 @@ public class AuthTest {
     String result = hakjdb.authenticate(password);
     assertNotNull(result);
     assertNotEquals("", result);
-    hakjdb.disconnect();
+    hakjdb.disconnectNow();
   }
 }

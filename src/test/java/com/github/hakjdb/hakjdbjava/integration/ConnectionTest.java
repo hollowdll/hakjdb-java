@@ -37,7 +37,7 @@ public class ConnectionTest {
                   sharedHakjdbContainer.getHost(),
                   sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT));
           assertNotNull(hakjdb);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 
@@ -50,7 +50,7 @@ public class ConnectionTest {
                   sharedHakjdbContainer.getHost(),
                   sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT));
           assertNotNull(hakjdb);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
           assertThrows(HakjDBRequestException.class, () -> hakjdb.echo(""));
         });
   }
@@ -73,7 +73,7 @@ public class ConnectionTest {
                   hakjdbContainer.getHost(),
                   hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
                   config);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 
@@ -95,7 +95,7 @@ public class ConnectionTest {
                   hakjdbContainer.getHost(),
                   hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
                   config);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 
@@ -110,7 +110,7 @@ public class ConnectionTest {
                   sharedHakjdbContainer.getHost(),
                   sharedHakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
                   config);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 
@@ -148,7 +148,7 @@ public class ConnectionTest {
                   hakjdbContainer.getHost(),
                   hakjdbContainer.getMappedPort(TestDefaults.HAKJDB_CONTAINER_PORT),
                   config);
-          hakjdb.disconnect();
+          hakjdb.disconnectNow();
         });
   }
 }
