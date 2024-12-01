@@ -4,18 +4,10 @@ import java.util.Set;
 
 public interface DatabaseRequests {
   /**
-   * Creates a new database with the specified name. Sets an empty database description.
-   *
-   * @param dbName
-   * @return Name of the created database
-   */
-  String createDatabase(String dbName);
-
-  /**
    * Creates a new database with the specified name and description.
    *
-   * @param dbName
-   * @param dbDescription
+   * @param dbName Name of the database
+   * @param dbDescription Description of the database
    * @return Name of the created database
    */
   String createDatabase(String dbName, String dbDescription);
@@ -30,7 +22,7 @@ public interface DatabaseRequests {
   /**
    * Returns information about a database as a JSON string.
    *
-   * @param dbName
+   * @param dbName Name of the database
    * @return JSON string of database information
    */
   String getDatabaseInfo(String dbName);
@@ -38,7 +30,7 @@ public interface DatabaseRequests {
   /**
    * Deletes the specified database.
    *
-   * @param dbName
+   * @param dbName Name of the database
    * @return Name of the deleted database
    */
   String deleteDatabase(String dbName);
@@ -46,7 +38,7 @@ public interface DatabaseRequests {
   /**
    * Changes the metadata of a database.
    *
-   * @param dbName
+   * @param dbName Name of the database
    * @param newName Null does not change the name
    * @param newDescription Null does not change the description
    * @return Name of the changed database

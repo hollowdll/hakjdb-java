@@ -2,7 +2,7 @@ package com.github.hakjdb.hakjdbjava.requests;
 
 public interface StringKeyValueRequestSender {
     /**
-     * Send set request.
+     * Sends set request.
      *
      * @param key Key to use
      * @param value Value to store
@@ -10,7 +10,7 @@ public interface StringKeyValueRequestSender {
     void sendRequestSet(String key, String value);
 
     /**
-     * Send get request.
+     * Sends get request.
      *
      * @param key Key to use
      * @return Retrieved value or null if key doesn't exist

@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface GeneralKeyValueRequestSender {
     /**
-     * Send getKeys request.
+     * Sends getKeys request.
      *
      * @return Retrieved keys
      */
