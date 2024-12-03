@@ -22,7 +22,7 @@ public class StringKeyValueGrpcClientTest {
 
   @BeforeEach
   void setup() {
-    grpcClient = new GrpcClient(null, null, 0, "", null, stringKeyValueGrpcClient, null);
+    grpcClient = new GrpcClient(null, null, 0, "", null, stringKeyValueGrpcClient, null, null);
   }
 
   @Test

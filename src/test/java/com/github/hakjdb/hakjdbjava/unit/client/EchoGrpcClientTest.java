@@ -21,7 +21,7 @@ public class EchoGrpcClientTest {
 
   @BeforeEach
   void setup() {
-    grpcClient = new GrpcClient(null, null, 0, "", echoClient, null, null);
+    grpcClient = new GrpcClient(null, null, 0, "", echoClient, null, null, null);
   }
 
   @Test

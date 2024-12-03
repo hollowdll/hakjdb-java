@@ -2,6 +2,7 @@ package com.github.hakjdb.hakjdbjava.grpc;
 
 import com.github.hakjdb.hakjdbjava.ClientConfig;
 import com.github.hakjdb.hakjdbjava.api.v1.authpb.Auth;
+import com.github.hakjdb.hakjdbjava.api.v1.dbpb.Db;
 import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBAuthException;
@@ -10,14 +11,16 @@ import com.github.hakjdb.hakjdbjava.util.GrpcUtils;
 import com.google.protobuf.ByteString;
 import io.grpc.*;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class GrpcClient {
   private final ManagedChannel channel;
-  private final EchoGrpcClient echoClient;
-  private final StringKeyValueGrpcClient stringKeyValueClient;
-  private final AuthGrpcClient authClient;
+  private final EchoGrpcClient echoGrpcClient;
+  private final StringKeyValueGrpcClient stringKeyValueGrpcClient;
+  private final AuthGrpcClient authGrpcClient;
+  private final DatabaseGrpcClient databaseGrpcClient;
   private final GrpcRequestMetadata requestMetadata;
   private final int requestTimeoutSeconds;
   private final String password;
@@ -34,9 +37,10 @@ public class GrpcClient {
     HeaderClientInterceptor interceptor =
         new HeaderClientInterceptor(requestMetadata.getMetadata());
     Channel interceptedChannel = ClientInterceptors.intercept(channel, interceptor);
-    this.echoClient = new EchoGrpcClient(interceptedChannel);
-    this.stringKeyValueClient = new StringKeyValueGrpcClient(interceptedChannel);
-    this.authClient = new AuthGrpcClient(interceptedChannel);
+    this.echoGrpcClient = new EchoGrpcClient(interceptedChannel);
+    this.stringKeyValueGrpcClient = new StringKeyValueGrpcClient(interceptedChannel);
+    this.authGrpcClient = new AuthGrpcClient(interceptedChannel);
+    this.databaseGrpcClient = new DatabaseGrpcClient(interceptedChannel);
     this.requestTimeoutSeconds = config.getRequestTimeoutSeconds();
     this.password = config.getPassword();
 
@@ -55,16 +59,18 @@ public class GrpcClient {
       GrpcRequestMetadata requestMetadata,
       int requestTimeoutSeconds,
       String password,
-      EchoGrpcClient echoClient,
-      StringKeyValueGrpcClient stringKeyValueClient,
-      AuthGrpcClient authClient) {
+      EchoGrpcClient echoGrpcClient,
+      StringKeyValueGrpcClient stringKeyValueGrpcClient,
+      AuthGrpcClient authGrpcClient,
+      DatabaseGrpcClient databaseGrpcClient) {
     this.channel = channel;
     this.requestMetadata = requestMetadata;
     this.requestTimeoutSeconds = requestTimeoutSeconds;
     this.password = password;
-    this.echoClient = echoClient;
-    this.stringKeyValueClient = stringKeyValueClient;
-    this.authClient = authClient;
+    this.echoGrpcClient = echoGrpcClient;
+    this.stringKeyValueGrpcClient = stringKeyValueGrpcClient;
+    this.authGrpcClient = authGrpcClient;
+    this.databaseGrpcClient = databaseGrpcClient;
   }
 
   public int getRequestTimeoutSeconds() {
@@ -90,7 +96,8 @@ public class GrpcClient {
         return GrpcChannelCredentialsFactory.createMutualTLSChannelCredentials(
             config.getTlsCACertPath(), config.getTlsClientCertPath(), config.getTlsClientKeyPath());
       } catch (IOException e) {
-        throw new HakjDBConnectionException("Could not establish mTLS connection with CA cert, client cert and client key", e);
+        throw new HakjDBConnectionException(
+            "Could not establish mTLS connection with CA cert, client cert and client key", e);
       }
     } else {
       try {
@@ -120,9 +127,7 @@ public class GrpcClient {
     }
   }
 
-  /**
-   * Shuts down the client channel immediately.
-   */
+  /** Shuts down the client channel immediately. */
   public void forcefulShutdown() {
     if (channel != null && !channel.isShutdown()) {
       channel.shutdownNow();
@@ -138,7 +143,8 @@ public class GrpcClient {
   public String callAuthenticate(String password) {
     Auth.AuthenticateRequest request =
         Auth.AuthenticateRequest.newBuilder().setPassword(password).build();
-    Auth.AuthenticateResponse response = authClient.authenticate(request, requestTimeoutSeconds);
+    Auth.AuthenticateResponse response =
+        authGrpcClient.authenticate(request, requestTimeoutSeconds);
     return response.getAuthToken();
   }
 
@@ -152,11 +158,11 @@ public class GrpcClient {
     Echo.UnaryEchoRequest request = Echo.UnaryEchoRequest.newBuilder().setMsg(message).build();
     Echo.UnaryEchoResponse response;
     try {
-      response = echoClient.unaryEcho(request, requestTimeoutSeconds);
+      response = echoGrpcClient.unaryEcho(request, requestTimeoutSeconds);
     } catch (StatusRuntimeException e) {
       if (GrpcUtils.isUnauthenticated(e)) {
         processAuth();
-        response = echoClient.unaryEcho(request, requestTimeoutSeconds);
+        response = echoGrpcClient.unaryEcho(request, requestTimeoutSeconds);
       } else {
         throw e;
       }
@@ -177,11 +183,11 @@ public class GrpcClient {
             .setValue(ByteString.copyFromUtf8(value))
             .build();
     try {
-      stringKeyValueClient.setString(request, requestTimeoutSeconds);
+      stringKeyValueGrpcClient.setString(request, requestTimeoutSeconds);
     } catch (StatusRuntimeException e) {
       if (GrpcUtils.isUnauthenticated(e)) {
         processAuth();
-        stringKeyValueClient.setString(request, requestTimeoutSeconds);
+        stringKeyValueGrpcClient.setString(request, requestTimeoutSeconds);
       } else {
         throw e;
       }
@@ -198,15 +204,39 @@ public class GrpcClient {
     StringKv.GetStringRequest request = StringKv.GetStringRequest.newBuilder().setKey(key).build();
     StringKv.GetStringResponse response;
     try {
-      response = stringKeyValueClient.getString(request, requestTimeoutSeconds);
+      response = stringKeyValueGrpcClient.getString(request, requestTimeoutSeconds);
     } catch (StatusRuntimeException e) {
       if (GrpcUtils.isUnauthenticated(e)) {
         processAuth();
-        response = stringKeyValueClient.getString(request, requestTimeoutSeconds);
+        response = stringKeyValueGrpcClient.getString(request, requestTimeoutSeconds);
       } else {
         throw e;
       }
     }
     return response.getOk() ? response.getValue().toStringUtf8() : null;
+  }
+
+  /**
+   * Calls the CreateDB RPC handler.
+   *
+   * @param dbName Name of the database
+   * @param dbDescription Description of the database
+   * @return Name of the created database
+   */
+  public String callCreateDatabase(String dbName, String dbDescription) {
+    Db.CreateDBRequest request =
+        Db.CreateDBRequest.newBuilder().setDbName(dbName).setDescription(dbDescription).build();
+    Db.CreateDBResponse response;
+    try {
+      response = databaseGrpcClient.createDatabase(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = databaseGrpcClient.createDatabase(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
+    return response.getDbName();
   }
 }

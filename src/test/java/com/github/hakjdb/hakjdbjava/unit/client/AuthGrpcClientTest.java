@@ -21,7 +21,7 @@ public class AuthGrpcClientTest {
 
   @BeforeEach
   void setup() {
-    grpcClient = new GrpcClient(null, null, 0, "", null, null, authGrpcClient);
+    grpcClient = new GrpcClient(null, null, 0, "", null, null, authGrpcClient, null);
   }
 
   @Test
