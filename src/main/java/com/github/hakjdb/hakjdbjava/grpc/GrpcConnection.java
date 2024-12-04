@@ -6,11 +6,15 @@ import com.github.hakjdb.hakjdbjava.Connection;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBRequestException;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
+import com.github.hakjdb.hakjdbjava.requests.DatabaseRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.Set;
 
 public class GrpcConnection
-    implements Connection, AuthRequestSender, EchoRequestSender, StringKeyValueRequestSender {
+    implements Connection, AuthRequestSender, EchoRequestSender, StringKeyValueRequestSender, DatabaseRequestSender {
   private final ClientConfig config;
   private final GrpcClient grpcClient;
 
@@ -102,6 +106,35 @@ public class GrpcConnection
     } catch (Exception e) {
       throw new HakjDBRequestException(createRequestFailedMessage(e), e);
     }
+  }
+
+  @Override
+  public String sendRequestCreateDatabase(String dbName, String dbDescription) {
+    try {
+      return grpcClient.callCreateDatabase(dbName, dbDescription);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
+  }
+
+  @Override
+  public Set<String> sendRequestGetDatabases() {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public String sendRequestGetDatabaseInfo(String dbName) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public String sendRequestDeleteDatabase(String dbName) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public Set<String> sendRequestChangeDatabase() {
+    throw new NotImplementedException();
   }
 
   private String createRequestFailedMessage(Exception e) {
