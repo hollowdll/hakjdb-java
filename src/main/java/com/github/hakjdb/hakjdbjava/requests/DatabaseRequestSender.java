@@ -1,5 +1,7 @@
 package com.github.hakjdb.hakjdbjava.requests;
 
+import com.github.hakjdb.hakjdbjava.params.ChangeDatabaseOptions;
+
 import java.util.Set;
 
 public interface DatabaseRequestSender {
@@ -39,9 +41,8 @@ public interface DatabaseRequestSender {
    * Sends changeDatabase request.
    *
    * @param dbName Name of the database
-   * @param newName Null does not change the name
-   * @param newDescription Null does not change the description
+   * @param options Options of what to change
    * @return Name of the changed database
    */
-  String sendRequestChangeDatabase(String dbName, String newName, String newDescription);
+  String sendRequestChangeDatabase(String dbName, ChangeDatabaseOptions options);
 }

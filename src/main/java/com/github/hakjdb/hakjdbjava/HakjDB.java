@@ -2,11 +2,16 @@ package com.github.hakjdb.hakjdbjava;
 
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.grpc.GrpcConnection;
+import com.github.hakjdb.hakjdbjava.params.ChangeDatabaseOptions;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequests;
+import com.github.hakjdb.hakjdbjava.requests.DatabaseRequests;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequests;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequests;
 
-public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequests {
+import java.util.Set;
+
+public class HakjDB
+    implements AuthRequests, EchoRequests, StringKeyValueRequests, DatabaseRequests {
   private final GrpcConnection connection;
 
   public HakjDB() {
@@ -39,10 +44,7 @@ public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequest
     }
   }
 
-  /**
-   * Disconnect from the HakjDB server.
-   * This method closes the connection gracefully.
-   */
+  /** Disconnect from the HakjDB server. This method closes the connection gracefully. */
   public void disconnect() {
     if (connection != null) {
       connection.disconnect();
@@ -50,10 +52,8 @@ public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequest
   }
 
   /**
-   * Disconnect from the HakjDB server.
-   * This method closes the connection immediately.
-   * If there are requests being processed when this is called,
-   * they may get interrupted.
+   * Disconnect from the HakjDB server. This method closes the connection immediately. If there are
+   * requests being processed when this is called, they may get interrupted.
    */
   public void disconnectNow() {
     if (connection != null) {
@@ -79,5 +79,30 @@ public class HakjDB implements AuthRequests, EchoRequests, StringKeyValueRequest
   @Override
   public String get(String key) {
     return connection.sendRequestGet(key);
+  }
+
+  @Override
+  public String createDatabase(String dbName, String dbDescription) {
+    return connection.sendRequestCreateDatabase(dbName, dbDescription);
+  }
+
+  @Override
+  public Set<String> getDatabases() {
+    return connection.sendRequestGetDatabases();
+  }
+
+  @Override
+  public String getDatabaseInfo(String dbName) {
+    return connection.sendRequestGetDatabaseInfo(dbName);
+  }
+
+  @Override
+  public String deleteDatabase(String dbName) {
+    return connection.sendRequestDeleteDatabase(dbName);
+  }
+
+  @Override
+  public String changeDatabase(String dbName, ChangeDatabaseOptions options) {
+    return connection.sendRequestChangeDatabase(dbName, options);
   }
 }

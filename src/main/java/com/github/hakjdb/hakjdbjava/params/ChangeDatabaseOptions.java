@@ -31,6 +31,7 @@ public class ChangeDatabaseOptions {
 
     /**
      * Sets the new database name.
+     *
      * @param newName New name of the database. Null does not change the name.
      * @return Builder
      */
@@ -41,6 +42,7 @@ public class ChangeDatabaseOptions {
 
     /**
      * Sets the new database description.
+     *
      * @param newDescription New description of the database. Null does not change the description.
      * @return Builder
      */

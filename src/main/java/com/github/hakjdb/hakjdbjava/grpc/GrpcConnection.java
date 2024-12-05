@@ -5,6 +5,7 @@ import com.github.hakjdb.hakjdbjava.ConfigDefaults;
 import com.github.hakjdb.hakjdbjava.Connection;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBRequestException;
+import com.github.hakjdb.hakjdbjava.params.ChangeDatabaseOptions;
 import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.DatabaseRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
@@ -133,7 +134,7 @@ public class GrpcConnection
   }
 
   @Override
-  public Set<String> sendRequestChangeDatabase() {
+  public String sendRequestChangeDatabase(String dbName, ChangeDatabaseOptions options) {
     throw new NotImplementedException();
   }
 
