@@ -10,8 +10,8 @@ import com.github.hakjdb.hakjdbjava.requests.AuthRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.DatabaseRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.EchoRequestSender;
 import com.github.hakjdb.hakjdbjava.requests.StringKeyValueRequestSender;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class GrpcConnection
@@ -120,22 +120,38 @@ public class GrpcConnection
 
   @Override
   public Set<String> sendRequestGetDatabases() {
-    throw new NotImplementedException();
+    try {
+      return grpcClient.callGetDatabases();
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   @Override
   public String sendRequestGetDatabaseInfo(String dbName) {
-    throw new NotImplementedException();
+    try {
+      return grpcClient.callGetDatabaseInfo(dbName);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   @Override
   public String sendRequestDeleteDatabase(String dbName) {
-    throw new NotImplementedException();
+    try {
+      return grpcClient.callDeleteDatabase(dbName);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   @Override
   public String sendRequestChangeDatabase(String dbName, ChangeDatabaseOptions options) {
-    throw new NotImplementedException();
+    try {
+      return grpcClient.callChangeDatabase(dbName, options);
+    } catch (Exception e) {
+      throw new HakjDBRequestException(createRequestFailedMessage(e), e);
+    }
   }
 
   private String createRequestFailedMessage(Exception e) {

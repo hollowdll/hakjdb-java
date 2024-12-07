@@ -32,7 +32,7 @@ public class DatabaseGrpcClient {
    * @param timeoutSeconds RPC timeout in seconds
    * @return RPC response
    */
-  public Db.GetAllDBsResponse getDatabase(Db.GetAllDBsRequest request, int timeoutSeconds) {
+  public Db.GetAllDBsResponse getDatabases(Db.GetAllDBsRequest request, int timeoutSeconds) {
     return stub.withDeadlineAfter(timeoutSeconds, TimeUnit.SECONDS).getAllDBs(request);
   }
 

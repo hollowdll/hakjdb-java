@@ -7,12 +7,18 @@ import com.github.hakjdb.hakjdbjava.api.v1.echopb.Echo;
 import com.github.hakjdb.hakjdbjava.api.v1.kvpb.StringKv;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBAuthException;
 import com.github.hakjdb.hakjdbjava.exceptions.HakjDBConnectionException;
+import com.github.hakjdb.hakjdbjava.params.ChangeDatabaseOptions;
 import com.github.hakjdb.hakjdbjava.util.GrpcUtils;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import io.grpc.*;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class GrpcClient {
@@ -233,6 +239,109 @@ public class GrpcClient {
       if (GrpcUtils.isUnauthenticated(e)) {
         processAuth();
         response = databaseGrpcClient.createDatabase(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
+    return response.getDbName();
+  }
+
+  /**
+   * Calls the GetAllDBs RPC handler.
+   *
+   * @return Database names.
+   */
+  public Set<String> callGetDatabases() {
+    Db.GetAllDBsRequest request = Db.GetAllDBsRequest.newBuilder().build();
+    Db.GetAllDBsResponse response;
+    try {
+      response = databaseGrpcClient.getDatabases(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = databaseGrpcClient.getDatabases(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
+    return new HashSet<>(response.getDbNamesList());
+  }
+
+  /**
+   * Calls the GetDBInfo RPC handler.
+   *
+   * @param dbName Name of the database
+   * @return JSON string of database information
+   */
+  public String callGetDatabaseInfo(String dbName) throws InvalidProtocolBufferException {
+    Db.GetDBInfoRequest request = Db.GetDBInfoRequest.newBuilder().setDbName(dbName).build();
+    Db.GetDBInfoResponse response;
+    try {
+      response = databaseGrpcClient.getDatabaseInfo(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = databaseGrpcClient.getDatabaseInfo(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
+    return JsonFormat.printer().print(response);
+  }
+
+  /**
+   * Calls the CreateDB RPC handler.
+   *
+   * @param dbName Name of the database
+   * @return Name of the deleted database
+   */
+  public String callDeleteDatabase(String dbName) {
+    Db.DeleteDBRequest request = Db.DeleteDBRequest.newBuilder().setDbName(dbName).build();
+    Db.DeleteDBResponse response;
+    try {
+      response = databaseGrpcClient.deleteDatabase(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = databaseGrpcClient.deleteDatabase(request, requestTimeoutSeconds);
+      } else {
+        throw e;
+      }
+    }
+    return response.getDbName();
+  }
+
+  /**
+   * Calls the CreateDB RPC handler.
+   *
+   * @param dbName Name of the database
+   * @param options Options of what to change
+   * @return Name of the changed database
+   */
+  public String callChangeDatabase(String dbName, ChangeDatabaseOptions options) {
+    Db.ChangeDBRequest request = Db.ChangeDBRequest.newBuilder().setDbName(dbName).build();
+    String newName = options.getNewName();
+    String newDescription = options.getNewDescription();
+
+    if (newName != null) {
+      request.toBuilder().setChangeName(true).setNewName(newName);
+    } else {
+      request.toBuilder().setChangeName(false).setNewName("");
+    }
+
+    if (newDescription != null) {
+      request.toBuilder().setChangeDescription(true).setNewDescription(newDescription);
+    } else {
+      request.toBuilder().setChangeDescription(false).setNewDescription("");
+    }
+
+    Db.ChangeDBResponse response;
+    try {
+      response = databaseGrpcClient.changeDatabase(request, requestTimeoutSeconds);
+    } catch (StatusRuntimeException e) {
+      if (GrpcUtils.isUnauthenticated(e)) {
+        processAuth();
+        response = databaseGrpcClient.changeDatabase(request, requestTimeoutSeconds);
       } else {
         throw e;
       }
