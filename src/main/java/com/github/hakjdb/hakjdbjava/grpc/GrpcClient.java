@@ -324,15 +324,15 @@ public class GrpcClient {
     String newDescription = options.getNewDescription();
 
     if (newName != null) {
-      request.toBuilder().setChangeName(true).setNewName(newName);
+      request = request.toBuilder().setChangeName(true).setNewName(newName).build();
     } else {
-      request.toBuilder().setChangeName(false).setNewName("");
+      request = request.toBuilder().setChangeName(false).setNewName("").build();
     }
 
     if (newDescription != null) {
-      request.toBuilder().setChangeDescription(true).setNewDescription(newDescription);
+      request = request.toBuilder().setChangeDescription(true).setNewDescription(newDescription).build();
     } else {
-      request.toBuilder().setChangeDescription(false).setNewDescription("");
+      request = request.toBuilder().setChangeDescription(false).setNewDescription("").build();
     }
 
     Db.ChangeDBResponse response;

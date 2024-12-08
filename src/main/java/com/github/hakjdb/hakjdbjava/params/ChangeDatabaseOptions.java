@@ -35,7 +35,7 @@ public class ChangeDatabaseOptions {
      * @param newName New name of the database. Null does not change the name.
      * @return Builder
      */
-    public Builder newName(String newName) {
+    public Builder setNewName(String newName) {
       this.newName = newName;
       return this;
     }
@@ -46,7 +46,7 @@ public class ChangeDatabaseOptions {
      * @param newDescription New description of the database. Null does not change the description.
      * @return Builder
      */
-    public Builder newDescription(String newDescription) {
+    public Builder setNewDescription(String newDescription) {
       this.newDescription = newDescription;
       return this;
     }
