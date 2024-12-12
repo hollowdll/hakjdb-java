@@ -286,7 +286,7 @@ public class GrpcClient {
         throw e;
       }
     }
-    return JsonFormat.printer().print(response);
+    return JsonFormat.printer().print(response.getData());
   }
 
   /**

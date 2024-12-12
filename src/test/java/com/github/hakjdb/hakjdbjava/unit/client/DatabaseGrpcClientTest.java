@@ -64,7 +64,7 @@ public class DatabaseGrpcClientTest {
           int timeout = grpcClient.getRequestTimeoutSeconds();
           Db.GetDBInfoRequest request = Db.GetDBInfoRequest.newBuilder().setDbName(dbName).build();
           Db.GetDBInfoResponse response = Db.GetDBInfoResponse.newBuilder().build();
-          String expectedJSON = JsonFormat.printer().print(response);
+          String expectedJSON = JsonFormat.printer().print(response.getData());
 
           when(databaseGrpcClient.getDatabaseInfo(request, timeout)).thenReturn(response);
           String actualJSON = grpcClient.callGetDatabaseInfo(dbName);
